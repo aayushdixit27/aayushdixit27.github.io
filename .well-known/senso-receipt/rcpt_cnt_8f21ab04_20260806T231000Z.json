@@ -1,0 +1,98 @@
+{
+  "receipt_version": "0.2-draft",
+  "id": "rcpt_cnt_8f21ab04_20260806T231000Z",
+  "issued_at": "2026-08-06T23:10:00Z",
+  "issuer": "senso",
+  "audience": "external",
+  "subject": {
+    "kind": "agent_action",
+    "content_id": "cnt_8f21ab04c7d9",
+    "action": "booking:test_drive",
+    "merchant": "dealer:northwind-central"
+  },
+  "allowed": {
+    "decision": "allow",
+    "rule": "all-clear",
+    "published_at": "2026-08-04T14:02:11Z",
+    "version": 3,
+    "approved": true,
+    "editor_count": 3,
+    "authority": {
+      "kind": "oauth_authorization_details",
+      "spec": "RFC 9396",
+      "action_type": "booking:test_drive",
+      "constraints_evaluated": [
+        "dealer",
+        "vehicle_price",
+        "date"
+      ]
+    }
+  },
+  "right": {
+    "rubric": "senso.claim-vs-source.v0",
+    "counts": {
+      "pass": 2,
+      "fail": 0,
+      "unverified": 1
+    },
+    "score_excluding_unverified": 1.0,
+    "score_counting_unverified_as_fail": 0.6667,
+    "scores_differ": true,
+    "which_is_canonical": "unsettled: Tom's fail bucket contains this receipt's unverified, so both scores are shown until the taxonomy is agreed",
+    "checks": [
+      {
+        "claim": "vehicle_price",
+        "outcome": "pass",
+        "source": "src_541ffba987345a3c"
+      },
+      {
+        "claim": "dealer",
+        "outcome": "pass",
+        "source": "src_69f21faebe374205"
+      },
+      {
+        "claim": "loaner_included",
+        "outcome": "unverified",
+        "source": null
+      }
+    ],
+    "ground_truth": [
+      {
+        "source": "src_541ffba987345a3c",
+        "checksum": "sha256:3fb4f6cb8724085f6db1447605088a91ba965b0e83aee9805795198856c5ccae"
+      },
+      {
+        "source": "src_69f21faebe374205",
+        "checksum": "sha256:0c948e9aa89ce7722db7304748f4913d41cf54c5805aed95ae46248436e9c862"
+      }
+    ]
+  },
+  "provenance": {
+    "relation": "derivedFrom",
+    "sources": [
+      {
+        "sourceId": "src_541ffba987345a3c",
+        "sourceDigest": "sha256:3fb4f6cb8724085f6db1447605088a91ba965b0e83aee9805795198856c5ccae"
+      },
+      {
+        "sourceId": "src_69f21faebe374205",
+        "sourceDigest": "sha256:0c948e9aa89ce7722db7304748f4913d41cf54c5805aed95ae46248436e9c862"
+      }
+    ]
+  },
+  "signature": null,
+  "not_established": [
+    "FIXTURES ARE SYNTHETIC. This receipt describes a demonstration booking against invented operator documents. It is not a record of any real customer, vehicle, dealer or transaction.",
+    "checksums prove a source has not changed since it was read; they do not prove Senso did not change it. That needs a signature and we are deliberately not doing that yet.",
+    "unverified checks are shown, and the receipt carries both scores because the taxonomy is not agreed with Tom",
+    "the rubric id is ours and is a placeholder",
+    "source addresses are replaced by stable opaque handles; two claims citing the same document still show the same handle"
+  ],
+  "origin": {
+    "served_from": "https://aayushdixit27.github.io",
+    "issuer_identity": "https://senso.ai",
+    "identity_binding": "not_established",
+    "why": "This object is served from a staging origin that is not the issuer's domain. UCP binds a namespace to whoever owns the domain, so ai.senso.verification is only meaningful when served from senso.ai. Treat this copy as a working demonstration of the format, not as a namespace claim.",
+    "intended_origin": "https://senso.ai"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "receipts": [
+    "rcpt_cnt_8f21ab04_20260806T231000Z"
+  ],
+  "resolves_at": "https://aayushdixit27.github.io/.well-known/senso-receipt/{id}.json",
+  "note": "external receipts only; an unknown id returns 404",
+  "origin": {
+    "served_from": "https://aayushdixit27.github.io",
+    "issuer_identity": "https://senso.ai",
+    "identity_binding": "not_established",
+    "why": "This object is served from a staging origin that is not the issuer's domain. UCP binds a namespace to whoever owns the domain, so ai.senso.verification is only meaningful when served from senso.ai. Treat this copy as a working demonstration of the format, not as a namespace claim.",
+    "intended_origin": "https://senso.ai"
+  }
+}

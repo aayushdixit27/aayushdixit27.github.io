@@ -1,0 +1,23 @@
+{
+  "ai.senso.verification": {
+    "version": "0.2-draft",
+    "receipt_id": "rcpt_cnt_8f21ab04_20260806T231000Z",
+    "resolves_at": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_cnt_8f21ab04_20260806T231000Z.json",
+    "rubric": "senso.claim-vs-source.v0",
+    "counts": {
+      "pass": 2,
+      "fail": 0,
+      "unverified": 1
+    },
+    "score_excluding_unverified": 1.0,
+    "score_counting_unverified_as_fail": 0.6667,
+    "note": "namespace claimed by domain ownership of senso.ai, per UCP reverse-domain binding. NOT YET PUBLISHED OR CONSUMED BY ANYTHING.",
+    "origin": {
+      "served_from": "https://aayushdixit27.github.io",
+      "issuer_identity": "https://senso.ai",
+      "identity_binding": "not_established",
+      "why": "This object is served from a staging origin that is not the issuer's domain. UCP binds a namespace to whoever owns the domain, so ai.senso.verification is only meaningful when served from senso.ai. Treat this copy as a working demonstration of the format, not as a namespace claim.",
+      "intended_origin": "https://senso.ai"
+    }
+  }
+}
