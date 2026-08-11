@@ -1,0 +1,58 @@
+{
+  "transaction": {
+    "id": "mock_txn_0001",
+    "is_mock": true,
+    "surface": "shopify_checkout",
+    "actor": "agent",
+    "intent": "purchase",
+    "sku": "SV-LIVE-001"
+  },
+  "decision": "proceed",
+  "why_proceed": "this is an improvement layer. It reports risk and does not stop transactions, because no payment platform will let a third party do that and we are not asking them to",
+  "risk_score": 110,
+  "risk_band": "high",
+  "score_policy": {
+    "conflict": 40,
+    "no_answer": 10,
+    "money_field_surcharge": 20,
+    "bands": {
+      "low": 0,
+      "elevated": 25,
+      "high": 60
+    },
+    "status": "stated policy, not calibrated against outcomes. Every input is printed so the number can be re-derived or disputed"
+  },
+  "findings": [
+    {
+      "field": "price_currency",
+      "kind": "conflict",
+      "points": 60,
+      "the_store_says": "USD",
+      "the_declaration_says": "CAD",
+      "remediation": "decide which is correct for price_currency, then change the other one. Until then a buyer can be shown either"
+    },
+    {
+      "field": "return_window_days",
+      "kind": "no_answer",
+      "points": 10,
+      "the_store_says": "nothing. the field is not published",
+      "the_declaration_says": "30",
+      "remediation": "publish return_window_days on the product, or remove it from the declaration. Nobody is wrong yet"
+    }
+  ],
+  "buyer_was_shown_mismatches": [
+    {
+      "field": "price_currency",
+      "buyer_saw": "CAD",
+      "store_holds": "USD"
+    }
+  ],
+  "receipt_id": "rcpt_538878275750_20260810T180000Z_42e9fb2c",
+  "receipt_url": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_538878275750_20260810T180000Z_42e9fb2c.json",
+  "data_provenance": "snapshot",
+  "not_established": [
+    "the weights are a policy, not a measurement. No outcome data exists to calibrate them against",
+    "one product and four fields. This is not a rate",
+    "the transaction is mock and is labelled mock in every field that leaves this process"
+  ]
+}
