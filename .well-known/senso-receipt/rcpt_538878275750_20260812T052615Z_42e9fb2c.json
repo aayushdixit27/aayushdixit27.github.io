@@ -1,0 +1,93 @@
+{
+  "receipt_version": "0.2-draft",
+  "id": "rcpt_538878275750_20260812T052615Z_42e9fb2c",
+  "issued_at": "2026-08-12T05:26:15Z",
+  "issuer": "senso",
+  "audience": "external",
+  "subject": {
+    "kind": "commerce_listing",
+    "content_id": "53887827575098",
+    "action": "commerce:verify_listing",
+    "merchant": "senso-verification-test.myshopify.com",
+    "governed_state": "42e9fb2c",
+    "shopify_product_id": "gid://shopify/Product/10394264437050",
+    "shopify_variant_id": "gid://shopify/ProductVariant/53887827575098",
+    "read_at": "2026-08-12T05:26:15Z",
+    "admin_api_version": "2026-07"
+  },
+  "allowed": {
+    "decision": "refuse",
+    "rule": "claim-conflicts-with-source",
+    "published_at": "2026-08-10T12:00:00Z",
+    "version": 1,
+    "approved": true,
+    "editor_count": 1,
+    "authority": {
+      "kind": "oauth_authorization_details",
+      "spec": "RFC 9396",
+      "action_type": "commerce:verify_listing",
+      "constraints_evaluated": [
+        "sku",
+        "shop"
+      ]
+    }
+  },
+  "right": {
+    "rubric": "senso.claim-vs-source.v0",
+    "counts": {
+      "pass": 2,
+      "fail": 1,
+      "unverified": 1
+    },
+    "score_excluding_unverified": 0.6667,
+    "score_counting_unverified_as_fail": 0.5,
+    "scores_differ": true,
+    "which_is_canonical": "unsettled: Tom's fail bucket contains this receipt's unverified, so both scores are shown until the taxonomy is agreed",
+    "checks": [
+      {
+        "claim": "price_amount",
+        "outcome": "pass",
+        "source": "src_a9781f98e1a7ca9e"
+      },
+      {
+        "claim": "price_currency",
+        "outcome": "fail",
+        "source": "src_a9781f98e1a7ca9e"
+      },
+      {
+        "claim": "status",
+        "outcome": "pass",
+        "source": "src_a9781f98e1a7ca9e"
+      },
+      {
+        "claim": "return_window_days",
+        "outcome": "unverified",
+        "source": null
+      }
+    ],
+    "ground_truth": [
+      {
+        "source": "src_a9781f98e1a7ca9e",
+        "checksum": "sha256:571b6a9a53b5eef62004183c35455deb43af645e1aecd7abf9188633ec457a98"
+      }
+    ]
+  },
+  "provenance": {
+    "relation": "derivedFrom",
+    "sources": [
+      {
+        "sourceId": "src_a9781f98e1a7ca9e",
+        "sourceDigest": "sha256:571b6a9a53b5eef62004183c35455deb43af645e1aecd7abf9188633ec457a98"
+      }
+    ]
+  },
+  "signature": null,
+  "not_established": [
+    "read live from senso-verification-test.myshopify.com at 2026-08-12T05:26:15Z on Admin API 2026-07. It describes the store at that moment and makes no claim about any later moment.",
+    "governed fields the store does not publish, counted as unverified rather than failed: return_window_days",
+    "checksums prove a source has not changed since it was read; they do not prove Senso did not change it. That needs a signature and we are deliberately not doing that yet.",
+    "unverified checks are shown, and the receipt carries both scores because the taxonomy is not agreed with Tom",
+    "the rubric id is ours and is a placeholder",
+    "source addresses are replaced by stable opaque handles; two claims citing the same document still show the same handle"
+  ]
+}

@@ -47,9 +47,9 @@
       "store_holds": "USD"
     }
   ],
-  "receipt_id": "rcpt_538878275750_20260810T180000Z_42e9fb2c",
-  "receipt_url": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_538878275750_20260810T180000Z_42e9fb2c.json",
-  "data_provenance": "snapshot",
+  "receipt_id": "rcpt_538878275750_20260812T052618Z_42e9fb2c",
+  "receipt_url": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_538878275750_20260812T052618Z_42e9fb2c.json",
+  "data_provenance": "live",
   "not_established": [
     "the weights are a policy, not a measurement. No outcome data exists to calibrate them against",
     "one product and four fields. This is not a rate",

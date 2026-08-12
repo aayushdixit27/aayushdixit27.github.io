@@ -1,8 +1,8 @@
 {
   "ai.senso.verification": {
     "version": "0.2-draft",
-    "receipt_id": "rcpt_538878275750_20260810T180000Z_a4e88672",
-    "resolves_at": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_538878275750_20260810T180000Z_a4e88672.json",
+    "receipt_id": "rcpt_538878275750_20260812T052617Z_a4e88672",
+    "resolves_at": "https://aayushdixit27.github.io/.well-known/senso-receipt/rcpt_538878275750_20260812T052617Z_a4e88672.json",
     "rubric": "senso.claim-vs-source.v0",
     "counts": {
       "pass": 2,
