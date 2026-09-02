@@ -105,7 +105,8 @@ p{margin:0 0 1.1em}
    drop-shadow(0 calc(var(--sh) * .32) calc(var(--sb) * .28) rgba(0,0,0,.80))
    drop-shadow(0 var(--sh) var(--sb) rgba(0,0,0,.44))}
 .obj .face svg,.obj .back svg{display:block;width:100%;height:auto}
-.obj .back{position:absolute;inset:0;transform:rotateY(180deg)}
+.obj .back{position:absolute;inset:0;transform:rotateY(180deg);
+     display:flex;align-items:center}
 .obj.open{transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotateY(180deg);z-index:20}
 .obj.dimmed{opacity:.12;filter:blur(1.4px)}
 .tag{position:absolute;bottom:100%;left:50%;translate:-50% 0;margin-bottom:13px;
@@ -165,12 +166,14 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
        font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--faint)}
 
 @media (max-width:760px){
-  #scene{aspect-ratio:auto;max-height:none;padding:112px var(--gut) 40px;perspective:1200px}
+  #nav{position:static;background:var(--room)}
+  #scene{aspect-ratio:auto;max-height:none;padding:24px var(--gut) 40px;perspective:1200px}
   #slab,#apron,#pool,#cone{display:none}
-  #intro,#hint{position:static;max-width:none}
+  #intro,#hint{position:relative;z-index:1;max-width:none}
   #tagline,#sub{max-width:none}
   #intro{margin-bottom:44px}#hint{margin-top:48px}
   #shelf{display:flex;flex-direction:column;gap:74px}
+  .tag{position:static;translate:none;margin:0 0 14px;max-width:none}
   .obj{position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
        width:100%!important;
        filter:drop-shadow(0 26px 34px rgba(0,0,0,.6))}
@@ -180,7 +183,7 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
   .entries .note{grid-column:1}
 }
 @media (prefers-reduced-motion:reduce){
-  .obj,#cone,#pool,#tagline,#hint,#sub,#dark{transition-duration:.01ms}
+  .obj,.tag,.dot,#cone,#pool,#tagline,#hint,#sub,#dark{transition-duration:.01ms}
   #cord .pull{animation:none}
 }
 </style>
@@ -226,11 +229,10 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
       <div class="verdict"><span class="n">0%</span><span class="l">KEYWORD DETECTOR</span></div>
       <div class="verdict red"><span class="n">100%</span><span class="l">LLM JUDGE</span></div>
     </div>
-    <p>Running an adversarial suite against a guarded model, the attack success rate came back clean. Zero. The kind of number you screenshot.</p>
-    <p>An LLM judge, reading <strong>the same transcript</strong>, scored it at 100%. Every attack had landed.</p>
-    <p>The cause sat upstream of the thing I was looking at. PII masking ran before detection, so by the time the keyword detector saw the transcript, the attacker's signal had already been redacted out of it. The detector was not broken. It was reading a document with the evidence removed — and the redaction was a safety feature.</p>
-    <p>Detection moved ahead of masking and every prior run was re-baselined. <strong>What I cannot tell you is which of the earlier clean results were actually clean.</strong> That data is gone, and rebuilding it would have cost more than it was worth, so the line got drawn and the count started from the fix.</p>
-    <p>The lesson was not about pipeline ordering. It was that a metric agreeing with you is not evidence. Every eval I have built since has a second, differently-shaped reader whose only job is to disagree.</p>
+    <p>An adversarial suite against a guarded model returned a 0% attack success rate. An LLM judge, reading <strong>the same transcript</strong>, scored it 100%.</p>
+    <p>The cause was upstream of what I was looking at. PII masking ran before detection, so the keyword detector was reading a transcript with the attacker's signal already redacted out of it. The detector was not broken. The safety feature was eating the evidence.</p>
+    <p>Detection moved ahead of masking and every prior run was re-baselined. <strong>Which of the earlier clean results were actually clean is unrecoverable</strong>; the count starts from the fix.</p>
+    <p>A metric that agrees with you is not evidence. Every eval I have built since carries a second, differently-shaped reader whose only job is to disagree.</p>
   </div>
 
   <div class="case">
@@ -241,8 +243,9 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
       <div class="verdict"><span class="n">7 / 2</span><span class="l">CLOSED / CHANGED THE PRODUCT</span></div>
       <div class="verdict red"><span class="n">11,217</span><span class="l">WORDS UNREACHABLE</span></div>
     </div>
-    <p>I froze twelve developer questions with pass conditions written before any run, then executed them in two lanes with different handicaps. Setting the bar first is the whole method: once you have seen the output, you will negotiate with yourself about what counts as passing.</p>
-    <p>The finding that mattered most was not a bug. The company had published 11,217 words of product definition in a place that nothing reading the documentation could actually reach. <strong>The product was well explained and the explanation was unreachable.</strong> Two of the defects I filed changed the product; seven closed; the rest are a standing argument about what the docs are for.</p>
+    <p>I froze twelve developer questions with pass conditions written before any run, then executed them in two lanes with different handicaps. Setting the bar first is the method: once you have seen the output, you will negotiate with yourself about what counts as passing.</p>
+    <p>The finding that mattered was not a defect. The company had published 11,217 words of product definition in a place nothing reading the documentation could reach. <strong>The product was well explained and the explanation was unreachable.</strong></p>
+    <p>Seventy-three defects filed. Seven closed, two changed the product. The rest are a standing argument about what the docs are for.</p>
   </div>
 </section>
 
@@ -273,7 +276,7 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
     <li><span class="when">2026 · Hackathon</span><span class="what">PAR — Winner, Best Use of Senso</span>
       <span class="note">An autonomous purchasing agent that does the weekly restock for a small operator — a gym front desk, a cafe.</span></li>
     <li><span class="when">2026 · Hackathon</span><span class="what">911Stock — Winner, Most Creative Use of TrueFoundry</span>
-      <span class="note">Led product on a two-person team building an autonomous SEC-filing agent with human-in-the-loop review. Deep Agents Hackathon, RSAC.</span></li>
+      <span class="note">Led product on a two-person team building an autonomous agent with human-in-the-loop review. Deep Agents Hackathon, RSAC.</span></li>
     <li><span class="when">2024</span><span class="what">Product Management Accelerated Credential, Stanford Online</span><span class="note"></span></li>
     <li><span class="when">2023</span><span class="what">B.A., University of California, Santa Barbara</span><span class="note"></span></li>
   </ul>
@@ -310,29 +313,60 @@ const CONFIG = {
 ============================================================ */
 const OX="#8E3521", BONE="#D8CCBB", DIM="#5C544B";
 const OBJECTS=[
- {id:"screens",x:44,depth:.22,w:23,href:"#testing",
-  model:"Detector / Judge comparator",serial:"EVAL·ASR·0001",
-  service:"Personal lab · Jetson AGX Orin",
-  rated:"Adversarial suite reporting 0% attack success rate.",
-  fault:"An LLM judge scored the same transcript at 100%.",
-  faultSub:"Two readings of one artefact. Only one of them was true.",
-  cause:["PII masking ran upstream of detection. The attacker's",
-         "signal was redacted before the detector ever saw it."],
-  causeSub:"The safety fix was eating the evidence.",
-  action:["Moved detection ahead of masking. Re-baselined every","prior clean run."],
-  open:"Which earlier runs were genuinely clean is still unknown.",
-  face:`<svg viewBox="0 0 300 131">
-    <rect x="6" y="20" width="132" height="92" rx="4" fill="#0B0908" stroke="#3A2E24" stroke-width="2"/>
-    <rect x="16" y="30" width="112" height="72" fill="#100D0B"/>
-    <text x="72" y="78" text-anchor="middle" font-size="34" font-weight="600" fill="${BONE}" font-family="IBM Plex Mono,monospace">0%</text>
-    <rect x="58" y="112" width="28" height="12" fill="#1A1410"/><rect x="38" y="124" width="68" height="6" rx="2" fill="#221A14"/>
-    <rect x="160" y="20" width="132" height="92" rx="4" fill="#0B0908" stroke="#6E2716" stroke-width="2"/>
-    <rect x="170" y="30" width="112" height="72" fill="#150C09"/>
-    <text x="226" y="78" text-anchor="middle" font-size="30" font-weight="600" fill="#C4472C" font-family="IBM Plex Mono,monospace">100%</text>
-    <rect x="212" y="112" width="28" height="12" fill="#1A1410"/><rect x="192" y="124" width="68" height="6" rx="2" fill="#221A14"/>
-</svg>`},
+ /* LEFT — the release gate */
+ {id:"votal",x:22,depth:.62,w:19,href:"#shipped",
+  model:"Multilingual release gate",serial:"VOT·EVAL·0001",
+  service:"Jul 2025 – present · Votal.ai · enterprise agent platform",
+  rated:"Blocking adversarial attacks in 12 languages before release.",
+  fault:"Roughly 8% of attacks still clear the gate.",
+  faultSub:"A gate is a threshold someone decided was good enough.",
+  cause:["Evaluation that runs beside the release train gets read when",
+         "there is time and skipped when there is not."],
+  causeSub:"Advisory results lose to shipping pressure.",
+  action:["Scoped it with engineering as a gate, not a dashboard.",
+          "Across 12 languages it blocks roughly 92% of attacks."],
+  open:"Roughly 8% still gets through. Twelve languages is not every language.",
+  face:`<svg viewBox="0 0 300 146">
+    <rect x="18" y="24" width="264" height="112" rx="5" fill="#221B14" stroke="#3E3227" stroke-width="2"/>
+    <rect x="18" y="24" width="264" height="11" rx="5" fill="#2E251B"/>
+    <rect x="36" y="46" width="126" height="54" rx="2" fill="#0B0908" stroke="#171210" stroke-width="2"/>
+    <text x="99" y="85" text-anchor="middle" font-size="31" font-weight="600" fill="${BONE}" font-family="IBM Plex Mono,monospace">92%</text>
+    <rect x="182" y="44" width="9" height="58" rx="2" fill="#4E4238"/>
+    <rect x="266" y="70" width="7" height="32" rx="2" fill="#3E3227"/>
+    <rect x="186" y="62" width="86" height="9" rx="2.5" fill="#6E6154"/>
+    ${[204,228,252].map(x=>`<rect x="${x}" y="62" width="11" height="9" fill="#332A20"/>`).join("")}
+    <circle cx="186.5" cy="66.5" r="5.5" fill="#8A7C6C"/><circle cx="186.5" cy="66.5" r="2" fill="#241D16"/>
+    ${Array.from({length:12},(_,i)=>i===11
+      ?`<circle cx="${38+i*20.5}" cy="118" r="5.6" fill="none" stroke="${OX}" stroke-width="1.2" opacity=".55"/><circle cx="${38+i*20.5}" cy="118" r="4.6" fill="${OX}"/>`
+      :`<circle cx="${38+i*20.5}" cy="118" r="4.6" fill="#7D7062"/>`).join("")}
+    <rect x="26" y="136" width="248" height="9" rx="2" fill="#17120D"/></svg>`},
 
- {id:"ratchet",x:15,depth:.66,w:17,href:"#shipped",
+ /* CENTRE — the hero */
+ {id:"senso",x:50,depth:.18,w:24,href:"#testing",
+  model:"Documentation conformance rig",serial:"SEN·DOC·0003",
+  service:"Jul 2026 – present · Senso.ai · advisory",
+  rated:"Platform behaves the way its documentation says it does.",
+  fault:"11,217 words of product definition, unreachable.",
+  faultSub:"Well explained, and nothing reading the docs could get to it.",
+  cause:["The definition sat in a surface the documentation never",
+         "pointed to. Anything reading the docs stopped short of it."],
+  causeSub:"Written is not the same as reachable.",
+  action:["Filed 73 defects as an outside developer. Seven closed,",
+          "two changed the product."],
+  open:"The rest are a standing argument about what the docs are for.",
+  face:`<svg viewBox="0 0 300 170">
+    <rect x="52" y="34" width="176" height="126" rx="3" fill="#1A1510" stroke="#2E251C" stroke-width="2" transform="rotate(-6 140 97)"/>
+    <rect x="62" y="28" width="176" height="126" rx="3" fill="#221B14" stroke="#3A2E24" stroke-width="2" transform="rotate(-2 150 91)"/>
+    <rect x="70" y="24" width="176" height="126" rx="3" fill="#2C241B" stroke="#4A3C2E" stroke-width="2"/>
+    <text x="88" y="58" font-size="27" font-weight="500" fill="${BONE}" font-family="IBM Plex Mono,monospace">11,217</text>
+    <g stroke="#5A4C3C" stroke-width="3" stroke-linecap="round">
+      <path d="M88,74 H228"/><path d="M88,106 H198"/><path d="M88,122 H222"/><path d="M88,138 H176"/></g>
+    <path d="M88,90 H214" stroke="#4A3C2E" stroke-width="3" stroke-linecap="round"/>
+    <path d="M82,90 H220" stroke="${OX}" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="238" cy="90" r="5" fill="${OX}"/></svg>`},
+
+ /* RIGHT — the hackathon build */
+ {id:"ratchet",x:76,depth:.70,w:18,href:"#shipped",
   model:"Self-verifying QA agent",serial:"RTC·SEA·0002",
   service:"2026 · Self-Evolving Agents Hackathon, SF",
   rated:"Fixes bugs and remembers the fix.",
@@ -349,31 +383,7 @@ const OBJECTS=[
     <rect x="40" y="46" width="220" height="12" fill="#241D16"/>
     <g stroke="#4E4238" stroke-width="3">${Array.from({length:12},(_,i)=>`<path d="M${58+i*16},58 V112"/>`).join("")}</g>
     <circle cx="250" cy="106" r="3.5" fill="${OX}"/>
-    <path d="M262,96 C316,100 320,140 274,150 C232,158 214,136 256,130" stroke="#141110" stroke-width="7" fill="none" stroke-linecap="round"/>
-</svg>`},
-
- {id:"senso",x:76,depth:.60,w:17,href:"#testing",
-  model:"Documentation conformance rig",serial:"SEN\u00b7DOC\u00b70003",
-  service:"Jul 2026 \u2013 present \u00b7 Senso.ai \u00b7 advisory",
-  rated:"Platform behaves the way its documentation says it does.",
-  fault:"11,217 words of product definition, published unreachable.",
-  faultSub:"Well explained, and nothing reading the docs could get to it.",
-  cause:["The definition sat in a surface the documentation never",
-         "pointed to. Anything reading the docs stopped short of it."],
-  causeSub:"Written is not the same as reachable.",
-  action:["Filed 73 defects as an outside developer. Seven closed,",
-          "two changed the product."],
-  open:"The rest are a standing argument about what the docs are for.",
-  face:`<svg viewBox="0 0 300 170">
-    <rect x="52" y="34" width="176" height="126" rx="3" fill="#1A1510" stroke="#2E251C" stroke-width="2" transform="rotate(-6 140 97)"/>
-    <rect x="62" y="28" width="176" height="126" rx="3" fill="#221B14" stroke="#3A2E24" stroke-width="2" transform="rotate(-2 150 91)"/>
-    <rect x="70" y="24" width="176" height="126" rx="3" fill="#2C241B" stroke="#4A3C2E" stroke-width="2"/>
-    <g stroke="#5A4C3C" stroke-width="3" stroke-linecap="round">
-      <path d="M88,50 H210"/><path d="M88,66 H228"/><path d="M88,98 H198"/><path d="M88,114 H222"/><path d="M88,130 H176"/></g>
-    <path d="M88,82 H214" stroke="#4A3C2E" stroke-width="3" stroke-linecap="round"/>
-    <path d="M82,82 H220" stroke="${OX}" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="238" cy="82" r="5" fill="${OX}"/>
-</svg>`}
+    <path d="M262,96 C316,100 320,140 274,150 C232,158 214,136 256,130" stroke="#141110" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`}
 ];
 
 /* ---------- plate generator (the back face) ---------- */
@@ -441,7 +451,10 @@ function openObj(el){
   if(openEl) closeObj();
   if(!narrow()){
     const s=scene.getBoundingClientRect(), e=el.getBoundingClientRect();
-    const k=Math.min(s.width*.58,720)/e.width;
+    const PLATE_AR=1280/840;
+    /* widest the plate can be before it outgrows the scene vertically */
+    const targetW=Math.min(s.width*.74, 1000, s.height*.90*PLATE_AR);
+    const k=targetW/e.width;
     el.style.setProperty("--dx",(s.left+s.width/2-(e.left+e.width/2))+"px");
     el.style.setProperty("--dy",(s.top+s.height*.46-(e.top+e.height/2))+"px");
     el.style.setProperty("--s",k);
