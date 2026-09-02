@@ -52,21 +52,31 @@ p{margin:0 0 1.1em}
 
 #bench-sec{position:relative;min-height:100svh;display:flex;flex-direction:column;
            justify-content:center;overflow:hidden}
-#scene{position:relative;width:100%;aspect-ratio:12/7;max-height:86svh;perspective:1600px}
+#scene{position:relative;width:100%;aspect-ratio:12/7;max-height:86svh;perspective:1600px;
+       --lamp-x:52}   /* single source of truth: cone, pool and rim side all derive from this */
 #glow{position:absolute;inset:0;pointer-events:none;
       background:radial-gradient(70% 78% at 52% 66%,#2C2119 0%,#181209 45%,#080604 100%)}
-#cone{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.4s ease .2s}
-#slab{position:absolute;left:0;right:0;bottom:12%;height:26%;
+#cone{position:absolute;inset:0;pointer-events:none;opacity:0;
+      transition:opacity 1.4s ease .2s;filter:blur(40px);
+      background:
+        radial-gradient(20% 34% at calc(var(--lamp-x) * 1%) 0%,rgba(232,192,138,.26),rgba(232,192,138,0) 74%),
+        radial-gradient(46% 72% at calc(var(--lamp-x) * 1%) 44%,rgba(232,192,138,.085),rgba(232,192,138,0) 76%)}
+#slab{position:absolute;left:0;right:0;bottom:22%;height:16%;
       background:linear-gradient(var(--bench-a),var(--bench-b));
-      clip-path:polygon(9% 0,91% 0,100% 62%,0 62%)}
-#pool{position:absolute;left:12%;right:12%;bottom:18%;height:22%;pointer-events:none;opacity:0;
-      background:radial-gradient(closest-side,rgba(232,192,138,.55),rgba(107,75,44,.20) 62%,transparent);
+      clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
+#apron{position:absolute;left:0;right:0;bottom:16%;height:6%;
+       background:linear-gradient(#2A1E14,#191108)}
+#pool{position:absolute;inset:0;pointer-events:none;opacity:0;
+      background:radial-gradient(44% 15% at calc(var(--lamp-x) * 1%) 69%,
+        rgba(232,192,138,.50),rgba(107,75,44,.18) 52%,transparent 82%);
       transition:opacity 1.6s ease .3s}
 .lit #cone,.lit #pool{opacity:1}
-#tagline{position:absolute;left:var(--gut);top:14%;max-width:23ch;margin:0;
+#intro{position:absolute;left:var(--gut);top:10%;max-width:30ch;
+       display:flex;flex-direction:column;gap:clamp(14px,1.6vw,22px)}
+#tagline{margin:0;max-width:23ch;
          font-size:clamp(17px,1.7vw,21px);line-height:1.5;color:#9C8A72;
          opacity:0;transition:opacity 1.2s ease .8s}
-#sub{position:absolute;left:var(--gut);top:31%;max-width:31ch;margin:0;
+#sub{margin:0;max-width:31ch;
      font-size:clamp(13px,1.15vw,15px);line-height:1.6;color:#6E6357;
      opacity:0;transition:opacity 1.2s ease 1.1s}
 #hint{position:absolute;left:var(--gut);bottom:4%;margin:0;font-family:var(--mono);
@@ -74,21 +84,47 @@ p{margin:0 0 1.1em}
       transition:opacity 1.2s ease 1.4s}
 .lit #tagline,.lit #hint,.lit #sub{opacity:1}
 
-.obj{position:absolute;border:0;padding:0;background:none;cursor:pointer;
+.obj{position:absolute;border:0;padding:0;background:none;cursor:pointer;line-height:0;
+     --depth:.5;
+     --scale:calc(1 - .26 * var(--depth));
+     --wEff:calc(var(--w) * var(--scale));
+     width:calc(var(--wEff) * 1%);
+     left:calc((var(--x) - var(--wEff) / 2) * 1%);
+     bottom:calc((22 + 16 * var(--depth)) * 1%);   /* 22 = near edge, 38 = far edge */
+     --sb:calc((3 + 9 * (1 - var(--depth))) * 1px);
+     --sh:calc((7 + 9 * (1 - var(--depth))) * 1px);
+     z-index:calc(10 - 10 * var(--depth));
      transform-style:preserve-3d;transform:translate(0,0) scale(1) rotateY(0);
      transition:transform .7s cubic-bezier(.22,.9,.24,1),opacity .4s}
 .obj:focus-visible{outline:2px solid var(--oxide-hi);outline-offset:12px}
+.obj{--rim-x:2px}            /* lamp is to the right of this object */
+.obj.lamp-left{--rim-x:-2px} /* lamp is to the left  */
 .obj .face,.obj .back{display:block;width:100%;backface-visibility:hidden}
+.obj .face{filter:
+   drop-shadow(var(--rim-x) -1.5px 0 rgba(232,192,138,.42))
+   drop-shadow(0 calc(var(--sh) * .32) calc(var(--sb) * .28) rgba(0,0,0,.80))
+   drop-shadow(0 var(--sh) var(--sb) rgba(0,0,0,.44))}
+.obj .face svg,.obj .back svg{display:block;width:100%;height:auto}
 .obj .back{position:absolute;inset:0;transform:rotateY(180deg)}
 .obj.open{transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotateY(180deg);z-index:20}
 .obj.dimmed{opacity:.12;filter:blur(1.4px)}
-.dot{position:absolute;top:-27px;left:50%;translate:-50% 0;width:22px;height:22px;border-radius:50%;
-     border:1.6px solid var(--oxide);background:rgba(18,16,14,.75);transition:.25s}
+.tag{position:absolute;bottom:100%;left:50%;translate:-50% 0;margin-bottom:13px;
+     width:max-content;max-width:26ch;backface-visibility:hidden;
+     display:flex;flex-direction:column;align-items:center;gap:5px;transition:opacity .3s}
+.tag-name{font-size:12.5px;line-height:1.35;text-align:center;color:#8E8072;transition:color .25s}
+.tag-act{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+     font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
+     color:var(--oxide);opacity:.85;transition:color .25s,opacity .25s}
+.dot{position:relative;flex:0 0 auto;width:12px;height:12px;border-radius:50%;
+     border:1px solid var(--oxide);background:rgba(18,16,14,.6);
+     transition:border-color .25s,scale .25s}
 .dot::before,.dot::after{content:"";position:absolute;background:var(--oxide);
      top:50%;left:50%;translate:-50% -50%}
-.dot::before{width:9px;height:1.6px}.dot::after{width:1.6px;height:9px}
-.obj:hover .dot,.obj:focus-visible .dot{border-color:var(--oxide-hi);scale:1.2}
-.obj.open .dot{opacity:0}
+.dot::before{width:5px;height:1px}.dot::after{width:1px;height:5px}
+.obj:hover .tag-name,.obj:focus-visible .tag-name{color:var(--bone)}
+.obj:hover .tag-act,.obj:focus-visible .tag-act{opacity:1;color:var(--oxide-hi)}
+.obj:hover .dot,.obj:focus-visible .dot{border-color:var(--oxide-hi);scale:1.25}
+.obj.open .tag{opacity:0}
 
 #tray{position:fixed;left:50%;translate:-50% 0;bottom:26px;z-index:30;display:flex;gap:10px;
       opacity:0;pointer-events:none;transition:opacity .3s}
@@ -130,11 +166,13 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
 
 @media (max-width:760px){
   #scene{aspect-ratio:auto;max-height:none;padding:112px var(--gut) 40px;perspective:1200px}
-  #slab,#pool,#cone{display:none}
-  #tagline,#hint,#sub{position:static;max-width:none}
-  #tagline{margin-bottom:18px}#sub{margin-bottom:44px}#hint{margin-top:48px}
+  #slab,#apron,#pool,#cone{display:none}
+  #intro,#hint{position:static;max-width:none}
+  #tagline,#sub{max-width:none}
+  #intro{margin-bottom:44px}#hint{margin-top:48px}
   #shelf{display:flex;flex-direction:column;gap:74px}
-  .obj{position:relative!important;left:auto!important;top:auto!important;width:100%!important;
+  .obj{position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
+       width:100%!important;
        filter:drop-shadow(0 26px 34px rgba(0,0,0,.6))}
   .obj.open{transform:rotateY(180deg)}
   .obj.dimmed{opacity:1;filter:none}
@@ -166,18 +204,14 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
 <section id="bench-sec">
   <div id="scene">
     <div id="glow"></div>
-    <svg id="cone" viewBox="0 0 1200 700" preserveAspectRatio="none" aria-hidden="true">
-      <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#FFE6BC" stop-opacity=".30"/>
-        <stop offset="55%" stop-color="#FFDCA8" stop-opacity=".09"/>
-        <stop offset="100%" stop-color="#FFD79C" stop-opacity="0"/></linearGradient></defs>
-      <polygon points="836,110 878,110 962,566 292,566" fill="url(#cg)"/>
-    </svg>
-    <div id="slab"></div><div id="pool"></div>
-    <h1 id="tagline">Nothing here was ordered assembled. Some of it is still in pieces.</h1>
-    <p id="sub">Aayush Dixit — product at Votal.ai. I build agents, then build the tests that decide whether they are good enough to ship.</p>
+    <div id="cone" aria-hidden="true"></div>
+    <div id="slab"></div><div id="apron"></div><div id="pool"></div>
+    <div id="intro">
+      <h1 id="tagline">Nothing here was ordered assembled. Some of it is still in pieces.</h1>
+      <p id="sub">Aayush Dixit — product at Votal.ai. I build agents, then build the tests that decide whether they are good enough to ship.</p>
+    </div>
     <div id="shelf"></div>
-    <p id="hint">TURN SOMETHING OVER</p>
+    <p id="hint">EVERY OBJECT TURNS OVER TO A FAULT REPORT</p>
   </div>
 </section>
 
@@ -276,7 +310,7 @@ const CONFIG = {
 ============================================================ */
 const OX="#8E3521", BONE="#D8CCBB", DIM="#5C544B";
 const OBJECTS=[
- {id:"screens",x:40,y:32,w:20,href:"#testing",
+ {id:"screens",x:44,depth:.22,w:23,href:"#testing",
   model:"Detector / Judge comparator",serial:"EVAL·ASR·0001",
   service:"Personal lab · Jetson AGX Orin",
   rated:"Adversarial suite reporting 0% attack success rate.",
@@ -287,7 +321,7 @@ const OBJECTS=[
   causeSub:"The safety fix was eating the evidence.",
   action:["Moved detection ahead of masking. Re-baselined every","prior clean run."],
   open:"Which earlier runs were genuinely clean is still unknown.",
-  face:`<svg viewBox="0 0 300 190">
+  face:`<svg viewBox="0 0 300 131">
     <rect x="6" y="20" width="132" height="92" rx="4" fill="#0B0908" stroke="#3A2E24" stroke-width="2"/>
     <rect x="16" y="30" width="112" height="72" fill="#100D0B"/>
     <text x="72" y="78" text-anchor="middle" font-size="34" font-weight="600" fill="${BONE}" font-family="IBM Plex Mono,monospace">0%</text>
@@ -296,9 +330,9 @@ const OBJECTS=[
     <rect x="170" y="30" width="112" height="72" fill="#150C09"/>
     <text x="226" y="78" text-anchor="middle" font-size="30" font-weight="600" fill="#C4472C" font-family="IBM Plex Mono,monospace">100%</text>
     <rect x="212" y="112" width="28" height="12" fill="#1A1410"/><rect x="192" y="124" width="68" height="6" rx="2" fill="#221A14"/>
-    <ellipse cx="150" cy="140" rx="146" ry="13" fill="#000" opacity=".38"/></svg>`},
+</svg>`},
 
- {id:"ratchet",x:11,y:44,w:16,href:"#shipped",
+ {id:"ratchet",x:15,depth:.66,w:17,href:"#shipped",
   model:"Self-verifying QA agent",serial:"RTC·SEA·0002",
   service:"2026 · Self-Evolving Agents Hackathon, SF",
   rated:"Fixes bugs and remembers the fix.",
@@ -310,15 +344,15 @@ const OBJECTS=[
   action:["Commit to memory only after an independent re-test passes.",
           "Recurring bugs fell from four AI calls to one."],
   open:"The re-test shares assumptions with the fix. Not fully independent yet.",
-  face:`<svg viewBox="0 0 300 190">
+  face:`<svg viewBox="0 0 300 156">
     <rect x="40" y="46" width="220" height="72" rx="4" fill="#171310"/>
     <rect x="40" y="46" width="220" height="12" fill="#241D16"/>
     <g stroke="#4E4238" stroke-width="3">${Array.from({length:12},(_,i)=>`<path d="M${58+i*16},58 V112"/>`).join("")}</g>
     <circle cx="250" cy="106" r="3.5" fill="${OX}"/>
     <path d="M262,96 C316,100 320,140 274,150 C232,158 214,136 256,130" stroke="#141110" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <ellipse cx="150" cy="126" rx="132" ry="13" fill="#000" opacity=".4"/></svg>`},
+</svg>`},
 
- {id:"senso",x:70,y:42,w:15,href:"#testing",
+ {id:"senso",x:76,depth:.60,w:17,href:"#testing",
   model:"Documentation conformance rig",serial:"SEN\u00b7DOC\u00b70003",
   service:"Jul 2026 \u2013 present \u00b7 Senso.ai \u00b7 advisory",
   rated:"Platform behaves the way its documentation says it does.",
@@ -330,7 +364,7 @@ const OBJECTS=[
   action:["Filed 73 defects as an outside developer. Seven closed,",
           "two changed the product."],
   open:"The rest are a standing argument about what the docs are for.",
-  face:`<svg viewBox="0 0 300 190">
+  face:`<svg viewBox="0 0 300 170">
     <rect x="52" y="34" width="176" height="126" rx="3" fill="#1A1510" stroke="#2E251C" stroke-width="2" transform="rotate(-6 140 97)"/>
     <rect x="62" y="28" width="176" height="126" rx="3" fill="#221B14" stroke="#3A2E24" stroke-width="2" transform="rotate(-2 150 91)"/>
     <rect x="70" y="24" width="176" height="126" rx="3" fill="#2C241B" stroke="#4A3C2E" stroke-width="2"/>
@@ -339,7 +373,7 @@ const OBJECTS=[
     <path d="M88,82 H214" stroke="#4A3C2E" stroke-width="3" stroke-linecap="round"/>
     <path d="M82,82 H220" stroke="${OX}" stroke-width="3" stroke-linecap="round"/>
     <circle cx="238" cy="82" r="5" fill="${OX}"/>
-    <ellipse cx="150" cy="168" rx="122" ry="11" fill="#000" opacity=".4"/></svg>`}
+</svg>`}
 ];
 
 /* ---------- plate generator (the back face) ---------- */
@@ -384,8 +418,12 @@ document.getElementById("gh").href=CONFIG.github;
 
 document.getElementById("shelf").innerHTML = OBJECTS.map(o=>`
   <button class="obj" id="o-${o.id}" data-href="${o.href}"
-          style="left:${o.x}%;top:${o.y}%;width:${o.w}%" aria-label="Turn over: ${o.model}">
-    <span class="dot" aria-hidden="true"></span>
+          style="--x:${o.x};--w:${o.w};--depth:${o.depth}"
+          aria-label="${o.model}. Turn over to read its equipment plate.">
+    <span class="tag" aria-hidden="true">
+      <span class="tag-name">${o.model}</span>
+      <span class="tag-act"><span class="dot"></span>turn over for the fault report</span>
+    </span>
     <span class="face">${o.face}</span>
     <span class="back">${plate(o)}</span>
   </button>`).join("");
@@ -394,6 +432,10 @@ const scene=document.getElementById("scene"), tray=document.getElementById("tray
       moreBtn=document.getElementById("moreBtn"), objs=[...document.querySelectorAll(".obj")];
 let openEl=null;
 const narrow=()=>matchMedia("(max-width:760px)").matches;
+
+/* which side of each object the lamp falls on — read from --lamp-x, never duplicated */
+const LAMP_X=parseFloat(getComputedStyle(scene).getPropertyValue("--lamp-x"));
+objs.forEach((el,i)=>el.classList.toggle("lamp-left",OBJECTS[i].x>LAMP_X));
 
 function openObj(el){
   if(openEl) closeObj();
