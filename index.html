@@ -15,8 +15,10 @@
 <style>
 :root{
   --room:#0A0806; --bench-a:#4A3624; --bench-b:#2E2116;
-  --bone:#D8CCBB; --oxide:#8E3521; --oxide-hi:#B24429;
-  --dim:#7A6F62; --faint:#4E463D; --rule:#241C15;
+  --bone:#D8CCBB;
+  /* interactive oxide, DARK GROUND ONLY. Light panels use #8E3521, the plate #5F2214. */
+  --oxide:#CE4D30; --oxide-hi:#E06A4C;
+  --dim:#827668; --faint:#837666; --rule:#241C15;
   --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
   --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
   --gut:clamp(20px,5vw,88px);
@@ -32,7 +34,11 @@ p{margin:0 0 1.1em}
 
 #nav{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;align-items:baseline;
      justify-content:space-between;gap:24px;flex-wrap:wrap;
-     padding:20px var(--gut);background:linear-gradient(#0A0806f2,#0A080600);
+     padding:20px var(--gut);
+     /* nav text occupies 38-70% of nav height; hold the scrim opaque past it so the
+        links keep their 4.51:1 over the hero glow AND over the light panels below */
+     background:linear-gradient(#0A0806 0 78%,rgba(10,8,6,.55) 90%,rgba(10,8,6,0) 100%);
+     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
      font-size:13px;letter-spacing:.06em}
 #nav .mark{font-weight:500;letter-spacing:.02em;font-size:15px}
 #nav ul{display:flex;gap:22px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
@@ -77,7 +83,7 @@ p{margin:0 0 1.1em}
          font-size:clamp(17px,1.7vw,21px);line-height:1.5;color:#9C8A72;
          opacity:0;transition:opacity 1.2s ease .8s}
 #sub{margin:0;max-width:44ch;
-     font-size:clamp(13px,1.15vw,15px);line-height:1.6;color:#6E6357;
+     font-size:clamp(13px,1.15vw,15px);line-height:1.6;color:#837667;
      opacity:0;transition:opacity 1.2s ease 1.1s}
 #hint{position:absolute;left:var(--gut);bottom:4%;margin:0;font-family:var(--mono);
       font-size:11px;letter-spacing:.3em;color:var(--faint);opacity:0;
@@ -115,7 +121,7 @@ p{margin:0 0 1.1em}
 .tag-name{font-size:12.5px;line-height:1.35;text-align:center;color:#8E8072;transition:color .25s}
 .tag-act{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
      font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
-     color:var(--oxide);opacity:.85;transition:color .25s,opacity .25s}
+     color:var(--oxide);transition:color .25s}
 .dot{position:relative;flex:0 0 auto;width:12px;height:12px;border-radius:50%;
      border:1px solid var(--oxide);background:rgba(18,16,14,.6);
      transition:border-color .25s,scale .25s}
@@ -123,7 +129,7 @@ p{margin:0 0 1.1em}
      top:50%;left:50%;translate:-50% -50%}
 .dot::before{width:5px;height:1px}.dot::after{width:1px;height:5px}
 .obj:hover .tag-name,.obj:focus-visible .tag-name{color:var(--bone)}
-.obj:hover .tag-act,.obj:focus-visible .tag-act{opacity:1;color:var(--oxide-hi)}
+.obj:hover .tag-act,.obj:focus-visible .tag-act{color:var(--oxide-hi)}
 .obj:hover .dot,.obj:focus-visible .dot{border-color:var(--oxide-hi);scale:1.25}
 .obj.open .tag{opacity:0}
 
@@ -135,29 +141,51 @@ p{margin:0 0 1.1em}
       background:rgba(10,8,6,.88);color:var(--bone);text-decoration:none}
 #tray a{border-color:var(--oxide);color:#E0A48F}
 
-section.band{padding:clamp(72px,10vw,140px) var(--gut);border-top:1px solid var(--rule)}
-.band h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.015em;margin-bottom:6px}
-.band h3{font-size:clamp(20px,2.2vw,26px);margin:0 0 6px}
-.band .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--faint);
+/* ---- band scopes: every band rule below reads tokens, never literals ---- */
+.band{--ink:#A2968A; --ink-strong:#D8CCBB; --head:#D8CCBB;
+      --kick:#837666; --hair:#241C15; --ox:#CE4D30;
+      --lede:#B8AB99; --tile-bg:#100C09; --ox-line:#5E2418}
+.band.light{--ink:#231D18; --ink-strong:#14100C; --head:#14100C;
+      --kick:#5C5349; --hair:#605A52; --ox:#8E3521;
+      --lede:#3A322B; --tile-bg:#DDD7CF; --ox-line:#8E3521;
+      color:var(--ink);
+      background-color:#D2CBC2;
+      /* 1px rules on an 8px period, alternating, <=7% — the plate's ruling, not a texture */
+      background-image:repeating-linear-gradient(180deg,
+        rgba(228,221,212,.07) 0 1px, transparent 1px 4px,
+        rgba(74,68,61,.055)  4px 5px, transparent 5px 8px)}
+
+section.band{padding:clamp(72px,10vw,140px) var(--gut);border-top:0}
+.band.light+.band.light{border-top:1px solid var(--hair)}
+.band h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.015em;margin-bottom:6px;
+         color:var(--head)}
+.band h3{font-size:clamp(20px,2.2vw,26px);margin:0 0 6px;color:var(--head)}
+.band .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--kick);
               margin:0 0 28px}
-.band .lede{font-size:clamp(18px,2vw,23px);color:#B8AB99;max-width:36ch;margin-bottom:2.4em}
-.band p,.band li{max-width:64ch;color:#A2968A}
-.band strong{color:var(--bone);font-weight:500}
+.band .lede{font-size:clamp(18px,2vw,23px);color:var(--lede);max-width:36ch;margin-bottom:2.4em}
+.band p,.band li{max-width:64ch;color:var(--ink)}
+.band strong{color:var(--ink-strong);font-weight:500}
 .case+.case{margin-top:clamp(56px,7vw,96px);padding-top:clamp(48px,6vw,80px);
-            border-top:1px solid var(--rule)}
+            border-top:1px solid var(--hair)}
+
+.case-ask{margin:2.4em 0 0;font-size:15px;max-width:64ch}
+.case-ask a{color:var(--ox);text-decoration:none;padding-bottom:2px;
+     border-bottom:1px solid var(--ox);transition:color .2s,border-color .2s}
+.case-ask a:hover,.case-ask a:focus-visible{color:var(--ink-strong);border-color:var(--ink-strong)}
 
 .verdicts{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 2.4em}
-.verdict{border:1px solid var(--rule);padding:20px 28px;min-width:164px;background:#100C09}
-.verdict .n{font-family:var(--mono);font-size:clamp(28px,3.4vw,38px);line-height:1;display:block}
-.verdict .l{font-size:11px;letter-spacing:.16em;color:var(--faint);margin-top:10px;display:block}
-.verdict.red{border-color:#3E1810}.verdict.red .n{color:var(--oxide-hi)}
+.verdict{border:1px solid var(--hair);padding:20px 28px;min-width:164px;background:var(--tile-bg)}
+.verdict .n{font-family:var(--mono);font-size:clamp(28px,3.4vw,38px);line-height:1;display:block;
+            color:var(--ink-strong)}
+.verdict .l{font-size:11px;letter-spacing:.16em;color:var(--kick);margin-top:10px;display:block}
+.verdict.red{border-color:var(--ox-line)}.verdict.red .n{color:var(--ox)}
 
-.entries{list-style:none;padding:0;margin:0;border-top:1px solid var(--rule);max-width:none}
-.entries li{border-bottom:1px solid var(--rule);padding:22px 0;display:grid;
+.entries{list-style:none;padding:0;margin:0;border-top:1px solid var(--hair);max-width:none}
+.entries li{border-bottom:1px solid var(--hair);padding:22px 0;display:grid;
             grid-template-columns:190px 1fr;gap:8px 30px;align-items:baseline;max-width:none}
-.entries .when{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.05em}
-.entries .what{color:var(--bone);font-weight:400}
-.entries .note{grid-column:2;color:#8D8175;font-size:15px;max-width:62ch}
+.entries .when{font-family:var(--mono);font-size:12px;color:var(--kick);letter-spacing:.05em}
+.entries .what{color:var(--ink-strong);font-weight:400}
+.entries .note{grid-column:2;color:var(--ink);font-size:15px;max-width:62ch}
 
 #contact a.big{display:inline-block;font-size:clamp(20px,2.6vw,30px);text-decoration:none;
      border-bottom:1px solid var(--oxide);padding-bottom:6px;transition:.2s;word-break:break-all}
@@ -191,7 +219,7 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
 <body>
 
 <nav id="nav">
-  <span class="mark" id="mark"></span>
+  <span class="mark" id="mark">Aayush Dixit</span>
   <ul>
     <li><a href="#bench-sec">on the bench</a></li>
     <li><a href="#testing">under testing</a></li>
@@ -218,21 +246,21 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
   </div>
 </section>
 
-<section class="band" id="testing">
+<section class="band light" id="testing">
   <p class="kicker">UNDER TESTING</p>
-  <h2>Two things I found by refusing to believe a number</h2>
+  <h2>Three things I built, and the number each one still gets wrong</h2>
 
   <div class="case">
-    <h3>The day my own fix started lying to me</h3>
-    <p class="lede">Two evaluations of one transcript. They disagreed completely, and the reassuring one was wrong.</p>
+    <h3>A gate that blocks 92% is a gate that passes 8%</h3>
+    <p class="lede">Votal.ai. The evaluation suite that gates every release — roadmapped, scoped with engineering, running now.</p>
     <div class="verdicts">
-      <div class="verdict"><span class="n">0%</span><span class="l">KEYWORD DETECTOR</span></div>
-      <div class="verdict red"><span class="n">100%</span><span class="l">LLM JUDGE</span></div>
+      <div class="verdict"><span class="n">12</span><span class="l">LANGUAGES</span></div>
+      <div class="verdict"><span class="n">~92%</span><span class="l">BLOCKED</span></div>
+      <div class="verdict"><span class="n">Every</span><span class="l">RELEASE</span></div>
     </div>
-    <p>An adversarial suite against a guarded model returned a 0% attack success rate. An LLM judge, reading <strong>the same transcript</strong>, scored it 100%.</p>
-    <p>The cause was upstream of what I was looking at. PII masking ran before detection, so the keyword detector was reading a transcript with the attacker's signal already redacted out of it. The detector was not broken. The safety feature was eating the evidence.</p>
-    <p>Detection moved ahead of masking and every prior run was re-baselined. <strong>Which of the earlier clean results were actually clean is unrecoverable</strong>; the count starts from the fix.</p>
-    <p>A metric that agrees with you is not evidence. Every eval I have built since carries a second, differently-shaped reader whose only job is to disagree.</p>
+    <p>I scoped it with engineering as a gate rather than a dashboard. That distinction is the whole design: a dashboard is read when there is time, a gate sits on the release path and a release does not go out without it. Across twelve languages it blocks roughly 92% of attacks.</p>
+    <p><strong>The number everyone quotes is the reassuring one.</strong> Ninety-two percent blocked is eight percent passed, and twelve languages is not every language a customer will type in. Both are still true today.</p>
+    <p class="case-ask"><a href="#contact">Building a gate like this one?</a></p>
   </div>
 
   <div class="case">
@@ -246,10 +274,25 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
     <p>I froze twelve developer questions with pass conditions written before any run, then executed them in two lanes with different handicaps. Setting the bar first is the method: once you have seen the output, you will negotiate with yourself about what counts as passing.</p>
     <p>The finding that mattered was not a defect. The company had published 11,217 words of product definition in a place nothing reading the documentation could reach. <strong>The product was well explained and the explanation was unreachable.</strong></p>
     <p>Seventy-three defects filed. Seven closed, two changed the product. The rest are a standing argument about what the docs are for.</p>
+    <p class="case-ask"><a href="#contact">Docs that promise more than they reach?</a></p>
+  </div>
+
+  <div class="case">
+    <h3>The day my own fix started lying to me</h3>
+    <p class="lede">Independent · Jetson AGX Orin. My own hardware, my own suite. Two evaluations of one transcript disagreed completely, and the reassuring one was wrong.</p>
+    <div class="verdicts">
+      <div class="verdict"><span class="n">0%</span><span class="l">KEYWORD DETECTOR</span></div>
+      <div class="verdict red"><span class="n">100%</span><span class="l">LLM JUDGE</span></div>
+    </div>
+    <p>An adversarial suite against a guarded model returned a 0% attack success rate. An LLM judge, reading <strong>the same transcript</strong>, scored it 100%.</p>
+    <p>The cause was upstream of what I was looking at. PII masking ran before detection, so the keyword detector was reading a transcript with the attacker's signal already redacted out of it. The detector was not broken. The safety feature was eating the evidence.</p>
+    <p>Detection moved ahead of masking and every prior run was re-baselined. <strong>Which of the earlier clean results were actually clean is unrecoverable</strong>; the count starts from the fix.</p>
+    <p>A metric that agrees with you is not evidence. Every eval I have built since carries a second, differently-shaped reader whose only job is to disagree.</p>
+    <p class="case-ask"><a href="#contact">Have a number you don't trust?</a></p>
   </div>
 </section>
 
-<section class="band" id="logbook">
+<section class="band light" id="logbook">
   <p class="kicker">THE LOGBOOK</p>
   <h2>Writing and side output</h2>
   <p class="lede">Most of what I understand, I understood by writing it down for someone else.</p>
@@ -261,7 +304,7 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
   </ul>
 </section>
 
-<section class="band" id="shipped">
+<section class="band light" id="shipped">
   <p class="kicker">SHIPPED</p>
   <h2>Where the hours went</h2>
   <ul class="entries">
@@ -284,14 +327,14 @@ footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
 
 <section class="band" id="contact">
   <p class="kicker">BUILD WITH ME</p>
-  <h2>Still in pieces, still going</h2>
-  <p class="lede">If you are working on agents, evaluation or guardrails — anything where the measurement is the hard part — I would like to hear about it.</p>
-  <p><a class="big" href="#" id="mailto">email</a></p>
-  <p style="margin-top:2em"><a href="#" id="li">LinkedIn</a> &nbsp;·&nbsp; <a href="#" id="gh">GitHub</a></p>
+  <h2>Tell me what you're building.</h2>
+  <p class="lede">Especially the part you can't measure yet.</p>
+  <p><a class="big" href="mailto:aayushdixit27@gmail.com" id="mailto">aayushdixit27@gmail.com</a></p>
+  <p style="margin-top:2em"><a href="https://linkedin.com/in/aayushdixit27" id="li">LinkedIn</a> &nbsp;·&nbsp; <a href="https://github.com/aayushdixit27" id="gh">GitHub</a></p>
 </section>
 </main>
 
-<footer><span id="foot"></span></footer>
+<footer><span id="foot">AAYUSH DIXIT · BUILT AND REBUILT</span></footer>
 
 <div id="tray"><button id="closeBtn">CLOSE · ESC</button><a id="moreBtn" href="#testing">OPEN THE FULL ENTRY</a></div>
 
@@ -311,15 +354,16 @@ const CONFIG = {
    BENCH CONTENT — one object per thing on the bench.
    Swap `face` for <img src="obj-<id>-face.png"> when cutouts land.
 ============================================================ */
-const OX="#8E3521", BONE="#D8CCBB", DIM="#5C544B";
+const OX="#5F2214", BONE="#D8CCBB", DIM="#5C544B";  /* plate oxide: 3.63:1 on the mid gradient stop */
 const OBJECTS=[
  /* LEFT — the release gate */
  {id:"votal",x:22,depth:.62,w:19,href:"#shipped",
   model:"Multilingual release gate",serial:"VOT·EVAL·0001",
   service:"Jul 2025 – present · Votal.ai · enterprise agent platform",
-  rated:"Blocking adversarial attacks in 12 languages before release.",
-  fault:"Roughly 8% of attacks still clear the gate.",
-  faultSub:"A gate is a threshold someone decided was good enough.",
+  rated:["Evaluation suite that gates every release. Across twelve",
+         "languages it blocks roughly 92% of attacks."],
+  fault:"A gate that blocks 92% is a gate that passes 8%.",
+  faultSub:"The number everyone quotes is the reassuring one.",
   cause:["Evaluation that runs beside the release train gets read when",
          "there is time and skipped when there is not."],
   causeSub:"Advisory results lose to shipping pressure.",
@@ -410,7 +454,10 @@ function plate(o){
    <text x="1160" y="192" text-anchor="end" font-size="25" fill="#2B2620" font-family="IBM Plex Mono,monospace">${o.serial}</text>
    <path d="M120,228 H1160" stroke="#5E574F" stroke-width="1.5"/>
    ${lbl(286,"IN SERVICE")}${v(286,o.service,23,"#2B2620")}
-   ${lbl(352,"RATED FOR")}${v(352,o.rated,23,"#2B2620")}
+   ${(rl=>rl.length>1
+       ? lbl(344,"RATED FOR")+v(344,rl[0],23,"#2B2620")+v(374,rl[1],23,"#2B2620")
+       : lbl(352,"RATED FOR")+v(352,rl[0],23,"#2B2620")
+     )(Array.isArray(o.rated)?o.rated:[o.rated])}
    ${rule(392)}${lbl(426,"FAULT FOUND")}${v(426,o.fault,26,OX,600)}${v(462,o.faultSub,21,DIM)}
    ${rule(498)}${lbl(532,"CAUSE")}${v(532,o.cause[0],23,"#2B2620")}${v(563,o.cause[1],23,"#2B2620")}${v(594,o.causeSub,21,DIM)}
    ${rule(622)}${lbl(656,"ACTION")}${v(656,o.action[0],23,"#2B2620")}${v(687,o.action[1],23,"#2B2620")}
@@ -419,12 +466,16 @@ function plate(o){
 }
 
 /* ---------- build ---------- */
-document.getElementById("mark").textContent = CONFIG.name;
-document.getElementById("foot").textContent = CONFIG.name.toUpperCase() + " · BUILT AND REBUILT";
+/* The name, footer, email and both profile links are real values in the markup above.
+   JS only overrides them if CONFIG has been edited to something different — it never
+   supplies a missing one, so the served HTML is complete with scripting off. */
+const setIf=(el,prop,val)=>{if(el&&val&&el[prop]!==val)el[prop]=val;};
+setIf(document.getElementById("mark"),"textContent",CONFIG.name);
+setIf(document.getElementById("foot"),"textContent",CONFIG.name.toUpperCase()+" · BUILT AND REBUILT");
 const ml=document.getElementById("mailto");
-ml.href="mailto:"+CONFIG.email; ml.textContent=CONFIG.email;
-document.getElementById("li").href=CONFIG.linkedin;
-document.getElementById("gh").href=CONFIG.github;
+setIf(ml,"href","mailto:"+CONFIG.email); setIf(ml,"textContent",CONFIG.email);
+setIf(document.getElementById("li"),"href",CONFIG.linkedin);
+setIf(document.getElementById("gh"),"href",CONFIG.github);
 
 document.getElementById("shelf").innerHTML = OBJECTS.map(o=>`
   <button class="obj" id="o-${o.id}" data-href="${o.href}"
