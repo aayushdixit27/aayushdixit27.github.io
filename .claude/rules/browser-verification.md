@@ -5,6 +5,10 @@ good as the instrument that produced it; this one lies in specific, repeatable w
 
 ## What is unreliable
 
+- **`requestAnimationFrame` does not run at all.** Zero ticks in 1.5s, and
+  awaiting it froze the renderer hard enough to time out the CDP call. This is
+  the worst one: anything rAF-driven appears broken when it is fine, and
+  `scrollTo({behavior:"smooth"})` is a silent no-op for the same reason.
 - **`getComputedStyle` reads go stale.** Values have come back as the pre-transition
   state minutes after the transition finished — reporting `opacity: 0` on elements
   that were visibly at full opacity in a screenshot taken the same second.
@@ -29,6 +33,14 @@ good as the instrument that produced it; this one lies in specific, repeatable w
 - **Verify "is this pre-existing?" against `git show HEAD:index.html`** served
   separately, before claiming a bug is or is not a regression. This has changed the
   answer more than once.
+
+## Cost of getting this wrong
+
+Three separate false diagnoses in one session came from trusting this tooling:
+a scroll handler declared dead when it was fine, a nav declared invisible when
+it was painting correctly, and native smooth scrolling declared broken when the
+tab simply was not compositing. In each case the screenshot or a fresh load
+would have given the right answer immediately.
 
 ## Deploying
 
