@@ -21,15 +21,15 @@ completely with scripts off.
 **No phone number or street address on the site.** Email, LinkedIn and GitHub only.
 
 **Design system.** Based on the Console theme from Hallmark (github.com/Nutlope/hallmark),
-picked by hand. Graphite colorway in dark mode, paper colorway in light mode, both
-as tokens on `:root`. Host Grotesk for everything a person reads; Atkinson
+picked by hand. Graphite colorway only: the site is dark in every browser, by choice
+(a light colorway was tried and dropped). Colors are tokens on `:root`. Host Grotesk for everything a person reads; Atkinson
 Hyperlegible Mono only for measured values. Amber means something a person did
 (the primary button, my call, awards); cool blue means something an instrument
 measured (dates, readings). Never swap those meanings or add a third accent.
 The signature is that claims are set as readings, drawn to scale from the resume's
 own numbers (the ~92% panel, the figures in Built). A new figure must use real
 resume numbers and stay to scale. No eyebrows, all-caps labels, stat-tile rows or
-decorative motion. Every text color is at least 4.5:1 in both modes; re-measure
+decorative motion. Every text color is at least 4.5:1; re-measure
 after any token change.
 
 ## History
