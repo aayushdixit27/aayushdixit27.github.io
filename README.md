@@ -19,7 +19,7 @@ python3 -m http.server 8000
 
 | path | what it is |
 |---|---|
-| `index.html` | the whole site: markup and CSS in one file, no JavaScript |
+| `index.html` | the whole site: markup, CSS and inline SVG figures in one file, no JavaScript |
 | `old-index.html` | earlier Senso verification-receipt page, kept reachable |
 | `.well-known/senso-receipt/` | published UCP verification receipts (JSON) |
 | `checkpoint-example.json`, `ucp-extension-example.json` | UCP format examples |

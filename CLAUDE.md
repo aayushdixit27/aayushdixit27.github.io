@@ -20,18 +20,25 @@ completely with scripts off.
 
 **No phone number or street address on the site.** Email, LinkedIn and GitHub only.
 
-**Design system.** Colors are tokens on `:root`, redefined for dark mode. One
-typeface (Schibsted Grotesk). One accent, the resume's navy. The large opening
-statement is the only loud element. No stat tiles, cards, eyebrow labels,
-all-caps labels or decorative motion. Measure contrast; body and muted text are
-both above 7:1 in light and dark.
+**Design system.** Based on the Console theme from Hallmark (github.com/Nutlope/hallmark),
+picked by hand. Graphite colorway in dark mode, paper colorway in light mode, both
+as tokens on `:root`. Host Grotesk for everything a person reads; Atkinson
+Hyperlegible Mono only for measured values. Amber means something a person did
+(the primary button, my call, awards); cool blue means something an instrument
+measured (dates, readings). Never swap those meanings or add a third accent.
+The signature is that claims are set as readings, drawn to scale from the resume's
+own numbers (the ~92% panel, the figures in Built). A new figure must use real
+resume numbers and stay to scale. No eyebrows, all-caps labels, stat-tile rows or
+decorative motion. Every text color is at least 4.5:1 in both modes; re-measure
+after any token change.
 
 ## History
 
 Until November 2026 the site was a "workbench under a lamp" concept with flip-over
-equipment plates and a scroll-driven intro. It was replaced with this plain page
+equipment plates and a scroll-driven intro. It was replaced with a plain page
 because it was slow to read and its facts had drifted from the resume. That
-version is in git history (commit `b06a245`) if anything needs recovering.
+version is in git history (commit `b06a245`) if anything needs recovering. The
+plain page was then redesigned on the Console theme the same month.
 
 ## Deploying
 
