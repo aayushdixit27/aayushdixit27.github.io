@@ -1,745 +1,247 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aayush Dixit — Product, AI agents and evaluation</title>
-<meta name="description" content="Product manager at two seed-stage AI startups. I build agents, then build the tests that decide whether they are good enough to ship.">
-<meta property="og:title" content="Aayush Dixit — Product, AI agents and evaluation">
-<meta property="og:description" content="Nothing here was ordered assembled. Some of it is still in pieces.">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#0A0806">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aayush Dixit, AI product builder</title>
+<meta name="description" content="Aayush Dixit owns AI products from the first customer conversation through launch, and writes the evals that show what to improve next. Product Lead at Votal.ai.">
+<meta property="og:title" content="Aayush Dixit, AI product builder">
+<meta property="og:description" content="I own AI products from the first customer conversation through launch, and I write the evals that show what to improve next.">
+<meta property="og:url" content="https://aayushdixit27.github.io/">
+<meta property="og:type" content="profile">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231F3F73'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='15' fill='white' text-anchor='middle'%3EAD%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..800;1,400..600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --room:#0A0806; --bench-a:#4A3624; --bench-b:#2E2116;
-  --bone:#D8CCBB;
-  /* interactive oxide, DARK GROUND ONLY. Light panels use #8E3521, the plate #5F2214. */
-  --oxide:#CE4D30; --oxide-hi:#E06A4C;
-  --dim:#827668; --faint:#837666; --rule:#241C15;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
-  --mono:"IBM Plex Mono",Menlo,Consolas,monospace;
-  --gut:clamp(20px,5vw,88px);
+  --page:#F6F7F5;
+  --ink:#16212C;
+  --muted:#4A5763;   /* 7.0:1 on --page */
+  --accent:#1F3F73;  /* resume navy, 10:1 on --page */
+  --line:#D5DAD9;
+  --select:#C9D6EC;
+  --font:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gut:clamp(16px,5vw,64px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --page:#11171D;
+    --ink:#E7EBEE;
+    --muted:#A5B0BA;
+    --accent:#9FBBEA;
+    --line:#2A333C;
+    --select:#2C4670;
+  }
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--room);color:var(--bone);font-family:var(--sans);
-     font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-weight:500;line-height:1.2;margin:0}
-a{color:inherit}
-p{margin:0 0 1.1em}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--font);
+  font-size:clamp(16px,1.05vw + 12px,18px);line-height:1.6;caret-color:var(--accent);
+  -webkit-font-smoothing:antialiased}
+::selection{background:var(--select);color:var(--ink)}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:.2em}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+h1,h2,h3,p,ul{margin:0}
+ul{padding:0;list-style:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 var(--gut)}
+.skip{position:absolute;left:-999px}
+.skip:focus{left:var(--gut);top:12px;background:var(--page);padding:6px 10px;z-index:2}
 
-#nav{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;align-items:center;
-     justify-content:space-between;gap:24px;flex-wrap:wrap;
-     padding:12px var(--gut);
-     /* the 44px link targets span 18-82% of nav height; hold the scrim opaque past
-        them so the links keep their 4.51:1 over the hero glow AND over the light
-        panels below, where an unscrimmed nav measured 1.02:1 */
-     background:linear-gradient(#0A0806 0 86%,rgba(10,8,6,.5) 94%,rgba(10,8,6,0) 100%);
-     backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-     font-size:15px;letter-spacing:.05em}
-#nav .mark{font-weight:500;letter-spacing:.02em;font-size:18px}
-#nav ul{display:flex;gap:10px;flex-wrap:wrap;list-style:none;margin:0;padding:0}
-#nav a{position:relative;display:flex;align-items:center;min-height:44px;
-       padding:0 10px;color:var(--dim);text-decoration:none;
-       transition:color .2s}
-#nav a::after{content:"";position:absolute;left:10px;right:10px;bottom:11px;height:1px;
-       background:transparent;transition:background .2s}
-#nav a:hover,#nav a:focus-visible{color:var(--bone)}
-#nav a:hover::after,#nav a:focus-visible::after{background:var(--oxide-hi)}
-#nav a:focus-visible{outline:2px solid var(--oxide-hi);outline-offset:-2px;border-radius:3px}
+/* header */
+header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding-top:24px;padding-bottom:24px;font-size:.9rem}
+header.top .name{font-weight:700;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+header.top nav ul{display:flex;gap:4px 20px;flex-wrap:wrap}
+header.top nav a{color:var(--muted);text-decoration:none;display:inline-block;padding:8px 0}
+header.top nav a:hover{color:var(--ink);text-decoration:underline}
 
-#bench-sec{position:relative;min-height:100svh;display:flex;flex-direction:column;
-           justify-content:center;overflow:hidden}
-#scene{position:relative;width:100%;aspect-ratio:12/7;max-height:86svh;perspective:1600px;
-       --lamp-x:52}   /* single source of truth: cone, pool and rim side all derive from this */
-#glow{position:absolute;inset:0;pointer-events:none;
-      background:radial-gradient(70% 78% at 52% 66%,#2C2119 0%,#181209 45%,#080604 100%)}
-#cone{position:absolute;inset:0;pointer-events:none;opacity:0;
-      transition:opacity 1.4s ease .2s;filter:blur(40px);
-      background:
-        radial-gradient(20% 34% at calc(var(--lamp-x) * 1%) 0%,rgba(232,192,138,.26),rgba(232,192,138,0) 74%),
-        radial-gradient(46% 72% at calc(var(--lamp-x) * 1%) 44%,rgba(232,192,138,.085),rgba(232,192,138,0) 76%)}
-#slab{position:absolute;left:0;right:0;bottom:22%;height:16%;
-      background:linear-gradient(var(--bench-a),var(--bench-b));
-      clip-path:polygon(9% 0,91% 0,100% 100%,0 100%)}
-#apron{position:absolute;left:0;right:0;bottom:16%;height:6%;
-       background:linear-gradient(#2A1E14,#191108)}
-#pool{position:absolute;inset:0;pointer-events:none;opacity:0;
-      background:radial-gradient(44% 15% at calc(var(--lamp-x) * 1%) 69%,
-        rgba(232,192,138,.50),rgba(107,75,44,.18) 52%,transparent 82%);
-      transition:opacity 1.6s ease .3s}
-.lit #cone,.lit #pool{opacity:1}
-#intro{position:absolute;left:var(--gut);top:7%;max-width:46ch;
-       display:flex;flex-direction:column;gap:clamp(14px,1.6vw,22px)}
-#tagline{margin:0;max-width:34ch;
-         font-size:clamp(17px,1.7vw,21px);line-height:1.5;color:#9C8A72;
-         opacity:0;transition:opacity 1.2s ease .8s}
-#sub{margin:0;max-width:44ch;
-     font-size:clamp(13px,1.15vw,15px);line-height:1.6;color:#837667;
-     opacity:0;transition:opacity 1.2s ease 1.1s}
-#hint{position:absolute;left:var(--gut);bottom:4%;margin:0;font-family:var(--mono);
-      font-size:12px;letter-spacing:.02em;color:var(--faint);opacity:0;
-      transition:opacity 1.2s ease 1.4s}
-#bleed{position:absolute;inset:0;pointer-events:none;opacity:0}
-#cardlight{position:absolute;inset:0;pointer-events:none;opacity:0}
-/* the opening card is an enhancement: it exists only while the sequence runs, so
-   a visitor who skips the sequence gets the finished hero with nothing left over */
-#card{display:none}
-.card-name{margin:0;font-family:var(--mono);font-size:clamp(13px,1.2vw,15px);
-     letter-spacing:.3em;color:#C9BCA8}
-.card-claim{margin:0 auto;max-width:24ch;font-size:clamp(23px,2.9vw,38px);
-     line-height:1.28;font-weight:400;color:var(--bone)}
-/* A real control, not decoration: it names the outcome, and the travelling light
-   names the gesture. Scrolling normally does the same thing. */
-#enter{display:none}
-html.sequence #enter{display:inline-flex;flex-direction:column;align-items:center;gap:16px;
-     margin:14px 0 0;padding:10px 16px 0;background:none;border:0;cursor:pointer;
-     font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--oxide);
-     transition:color .25s,opacity .85s ease}
-#enter:hover,#enter:focus-visible{color:var(--oxide-hi)}
-#enter:focus-visible{outline:2px solid var(--oxide-hi);outline-offset:8px;border-radius:3px}
-.enter-line{position:relative;display:block;width:1px;height:46px;
-     background:rgba(232,192,138,.16)}
-.enter-line::after{content:"";position:absolute;left:-1.5px;width:4px;height:4px;
-     border-radius:50%;background:#E8C08A;box-shadow:0 0 9px rgba(232,192,138,.75);
-     animation:drop 2.6s cubic-bezier(.45,0,.55,1) infinite}
-@keyframes drop{0%{top:-5px;opacity:0}18%{opacity:1}72%{opacity:1}100%{top:46px;opacity:0}}
-#enter:hover .enter-line::after,#enter:focus-visible .enter-line::after{
-     animation-duration:1.5s}
-.lit #tagline,.lit #hint,.lit #sub{opacity:1}
+/* hero: the one loud thing on the page */
+.hero{padding-top:clamp(40px,9vw,120px);padding-bottom:clamp(48px,8vw,104px)}
+.hero h1{font-size:1rem;font-weight:600;color:var(--muted);margin-bottom:20px}
+.hero .claim{font-size:clamp(2rem,4.6vw,3.9rem);line-height:1.08;font-weight:700;
+  letter-spacing:-.03em;max-width:20ch;text-wrap:balance}
+.hero .sub{margin-top:28px;max-width:52ch;color:var(--muted);font-size:1.08em}
+.hero .actions{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center}
+.btn{display:inline-block;background:var(--accent);color:var(--page);text-decoration:none;
+  font-weight:600;padding:12px 20px;border-radius:6px}
+.btn:hover{filter:brightness(1.12)}
 
-.obj{position:absolute;border:0;padding:0;background:none;cursor:pointer;line-height:0;
-     --depth:.5;
-     --scale:calc(1 - .26 * var(--depth));
-     --wEff:calc(var(--w) * var(--scale));
-     width:calc(var(--wEff) * 1%);
-     left:calc((var(--x) - var(--wEff) / 2) * 1%);
-     bottom:calc((22 + 16 * var(--depth)) * 1%);   /* 22 = near edge, 38 = far edge */
-     --sb:calc((3 + 9 * (1 - var(--depth))) * 1px);
-     --sh:calc((7 + 9 * (1 - var(--depth))) * 1px);
-     z-index:calc(10 - 10 * var(--depth));
-     transform-style:preserve-3d;transform:translate(0,0) scale(1) rotateY(0);
-     transition:transform .7s cubic-bezier(.22,.9,.24,1),opacity .4s}
-.obj:focus-visible{outline:2px solid var(--oxide-hi);outline-offset:12px}
-.obj{--rim-x:2px}            /* lamp is to the right of this object */
-.obj.lamp-left{--rim-x:-2px} /* lamp is to the left  */
-.obj .face,.obj .back{display:block;width:100%;backface-visibility:hidden}
-.obj .face{filter:
-   drop-shadow(var(--rim-x) -1.5px 0 rgba(232,192,138,.42))
-   drop-shadow(0 calc(var(--sh) * .32) calc(var(--sb) * .28) rgba(0,0,0,.80))
-   drop-shadow(0 var(--sh) var(--sb) rgba(0,0,0,.44))}
-.obj .face svg,.obj .back svg{display:block;width:100%;height:auto}
-.obj .back{position:absolute;inset:0;transform:rotateY(180deg);
-     display:flex;align-items:center}
-.obj.open{transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotateY(180deg);z-index:20}
-.obj.dimmed{opacity:.12;filter:blur(1.4px)}
-.tag{position:absolute;bottom:100%;left:50%;translate:-50% 0;margin-bottom:10px;
-     width:max-content;max-width:26ch;backface-visibility:hidden;
-     display:flex;flex-direction:column;align-items:center;gap:5px;transition:opacity .3s}
-.tag-name{font-size:12.5px;line-height:1.35;text-align:center;color:#8E8072;transition:color .25s}
-.tag-act{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
-     font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
-     color:var(--oxide);transition:color .25s}
-.dot{position:relative;flex:0 0 auto;width:12px;height:12px;border-radius:50%;
-     border:1px solid var(--oxide);background:rgba(18,16,14,.6);
-     transition:border-color .25s,scale .25s}
-.dot::before,.dot::after{content:"";position:absolute;background:var(--oxide);
-     top:50%;left:50%;translate:-50% -50%}
-.dot::before{width:5px;height:1px}.dot::after{width:1px;height:5px}
-.obj:hover .tag-name,.obj:focus-visible .tag-name{color:var(--bone)}
-.obj:hover .tag-act,.obj:focus-visible .tag-act{color:var(--oxide-hi)}
-.obj:hover .dot,.obj:focus-visible .dot{border-color:var(--oxide-hi);scale:1.25}
-.obj.open .tag{opacity:0}
-
-#tray{position:fixed;left:50%;translate:-50% 0;bottom:26px;z-index:30;display:flex;gap:10px;
-      opacity:0;pointer-events:none;transition:opacity .3s}
-#tray.on{opacity:1;pointer-events:auto}
-#tray button,#tray a{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
-      padding:11px 18px;border-radius:3px;border:1px solid var(--rule);cursor:pointer;
-      background:rgba(10,8,6,.88);color:var(--bone);text-decoration:none}
-#tray a{border-color:var(--oxide);color:#E0A48F}
-
-/* ---- band scopes: every band rule below reads tokens, never literals ---- */
-.band{--ink:#A2968A; --ink-strong:#D8CCBB; --head:#D8CCBB;
-      --kick:#837666; --hair:#241C15; --ox:#CE4D30;
-      --lede:#B8AB99; --tile-bg:#100C09; --ox-line:#5E2418}
-.band.light{--ink:#231D18; --ink-strong:#14100C; --head:#14100C;
-      --kick:#5C5349; --hair:#605A52; --ox:#8E3521;
-      --lede:#3A322B; --tile-bg:#DDD7CF; --ox-line:#8E3521;
-      color:var(--ink);
-      background-color:#D2CBC2;
-      /* 1px rules on an 8px period, alternating, <=7% — the plate's ruling, not a texture */
-      background-image:repeating-linear-gradient(180deg,
-        rgba(228,221,212,.07) 0 1px, transparent 1px 4px,
-        rgba(74,68,61,.055)  4px 5px, transparent 5px 8px)}
-
-section.band{padding:clamp(72px,10vw,140px) var(--gut);border-top:0}
-.band.light+.band.light{border-top:1px solid var(--hair)}
-.band h2{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.015em;margin-bottom:6px;
-         color:var(--head)}
-.band h3{font-size:clamp(20px,2.2vw,26px);margin:0 0 6px;color:var(--head)}
-.band .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--kick);
-              margin:0 0 28px}
-.band .lede{font-size:clamp(18px,2vw,23px);color:var(--lede);max-width:36ch;margin-bottom:2.4em}
-.band p,.band li{max-width:64ch;color:var(--ink)}
-.band strong{color:var(--ink-strong);font-weight:500}
-.case+.case{margin-top:clamp(56px,7vw,96px);padding-top:clamp(48px,6vw,80px);
-            border-top:1px solid var(--hair)}
-
-.case-ask{margin:2.4em 0 0;font-size:15px;max-width:64ch}
-.case-ask a{color:var(--ox);text-decoration:none;padding-bottom:2px;
-     border-bottom:1px solid var(--ox);transition:color .2s,border-color .2s}
-.case-ask a:hover,.case-ask a:focus-visible{color:var(--ink-strong);border-color:var(--ink-strong)}
-
-.verdicts{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 2.4em}
-.verdict{border:1px solid var(--hair);padding:20px 28px;min-width:164px;background:var(--tile-bg)}
-.verdict .n{font-family:var(--mono);font-size:clamp(28px,3.4vw,38px);line-height:1;display:block;
-            color:var(--ink-strong)}
-.verdict .l{font-size:11px;letter-spacing:.16em;color:var(--kick);margin-top:10px;display:block}
-.verdict.red{border-color:var(--ox-line)}.verdict.red .n{color:var(--ox)}
-
-.entries{list-style:none;padding:0;margin:0;border-top:1px solid var(--hair);max-width:none}
-.entries li{border-bottom:1px solid var(--hair);padding:22px 0;display:grid;
-            grid-template-columns:190px 1fr;gap:8px 30px;align-items:baseline;max-width:none}
-.entries .when{font-family:var(--mono);font-size:12px;color:var(--kick);letter-spacing:.05em}
-.entries .what{color:var(--ink-strong);font-weight:400}
-.entries .note{grid-column:2;color:var(--ink);font-size:15px;max-width:62ch}
-
-#contact a.big{display:inline-block;font-size:clamp(20px,2.6vw,30px);text-decoration:none;
-     border-bottom:1px solid var(--oxide);padding-bottom:6px;transition:.2s;word-break:break-all}
-#contact a.big:hover{border-color:var(--oxide-hi);color:#E0A48F}
-footer{padding:44px var(--gut) 64px;border-top:1px solid var(--rule);
-       font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--faint)}
-
-@media (max-width:760px){
-  #nav{position:static;background:var(--room)}
-  #scene{aspect-ratio:auto;max-height:none;padding:24px var(--gut) 40px;perspective:1200px}
-  #slab,#apron,#pool,#cone{display:none}
-  /* relative (not static) so these paint above the absolutely-positioned #glow,
-     but left/bottom from the desktop rules must be neutralised or they offset */
-  #intro,#hint{position:relative;z-index:1;max-width:none;left:auto;bottom:auto}
-  #tagline,#sub{max-width:none}
-  #intro{margin-bottom:44px}#hint{margin-top:48px}
-  /* the card is the mobile hero's opening, shown always rather than per-sequence */
-  /* relative + z-index for the same reason as #intro: #glow is absolutely
-     positioned and would otherwise paint straight over this */
-  #card{display:flex;flex-direction:column;align-items:center;gap:12px;
-        position:relative;z-index:1;inset:auto;translate:none;width:auto;
-        margin:0 0 40px;text-align:center}
-  .card-claim{font-size:clamp(21px,5.6vw,27px);max-width:none}
-  #enter{display:none!important}   /* no sequence to enter on a phone */
-  #shelf{display:flex;flex-direction:column;gap:74px}
-  .tag{position:static;translate:none;margin:0 0 14px;max-width:none}
-  .obj{position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;
-       width:100%!important;
-       filter:drop-shadow(0 26px 34px rgba(0,0,0,.6))}
-  .obj.open{transform:rotateY(180deg)}
-  .obj.dimmed{opacity:1;filter:none}
-  .entries li{grid-template-columns:1fr}
-  .entries .note{grid-column:1}
+/* sections: heading in a left rail on wide screens */
+section.block{display:grid;grid-template-columns:1fr;gap:20px;
+  padding-top:44px;padding-bottom:44px;border-top:1px solid var(--line)}
+@media (min-width:860px){
+  section.block{grid-template-columns:200px 1fr;gap:48px}
 }
-@media (prefers-reduced-motion:reduce){
-  .obj,.tag,.dot,#cone,#pool,#tagline,#hint,#sub,#glow,#slab,#apron,#bleed,#nav,
-  #card,#cardlight,#intro{transition-duration:.01ms}
-  .enter-line::after{animation:none;opacity:0}
-  /* requirement: remove the sequence, do not merely shorten it */
-  #arrival{height:auto!important}
-  #bench-sec{position:static!important;height:auto!important;min-height:100svh!important}
-  #bleed{animation:none!important;opacity:0!important}
-  #shelf,#hint{animation:none!important}
-}
+section.block>h2{font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
+.stack>*+*{margin-top:40px}
 
-/* ============================================================
-   ARRIVAL SEQUENCE — additive only.
-   Everything below is scoped to html.sequence / html.seq-mobile, which JS
-   opts into. With JS off or broken the rules above render the finished
-   bench exactly as before; JS never SUPPLIES the visible state.
-============================================================ */
-/* 280svh container with a 100svh sticky hero = 180svh of actual scroll travel,
-   which is what "about 180svh of scroll" has to mean for four beats to separate.
-   A 180svh container yields only 80svh of travel and the beats collide. */
-html.sequence #arrival{height:280svh}
-html.sequence #bench-sec{position:sticky;top:0;height:100svh;min-height:0}
+/* proof */
+.proof li{max-width:62ch}
+.proof li+li{margin-top:14px}
+.proof strong{font-weight:700}
 
-/* BEAT 1 — only #intro. #intro is never touched by any stage rule: the
-   objects assemble around the line, the line does not move or fade. */
-html.sequence #nav{visibility:hidden;opacity:0;
-     transition:opacity .9s ease,visibility 0s linear .9s}
-html.sequence #glow{opacity:.55;transition:opacity 1.5s ease}
-html.sequence #cone,html.sequence #pool{opacity:0}
-html.sequence #slab,html.sequence #apron{opacity:0;transition:opacity 1.3s ease}
-html.sequence #hint{opacity:0}
-html.sequence #intro{opacity:0;transition:opacity 1s ease}
-html.sequence #card{display:flex;flex-direction:column;align-items:center;gap:20px;
-     position:absolute;left:50%;top:39%;translate:-50% -50%;
-     width:min(720px,86%);text-align:center;z-index:3;
-     transition:opacity .85s ease,translate .85s cubic-bezier(.22,.9,.24,1)}
-html.sequence #cardlight{opacity:1;transition:opacity 1.2s ease;filter:blur(30px);
-     background:
-       radial-gradient(30% 21% at 50% 37%,rgba(232,192,138,.21),rgba(232,192,138,0) 72%),
-       radial-gradient(13% 42% at 50% 0%,rgba(232,192,138,.15),rgba(232,192,138,0) 80%)}
-html.sequence .obj{opacity:0;translate:0 16px;pointer-events:none;
-     transition:transform .7s cubic-bezier(.22,.9,.24,1),opacity .65s ease,
-                translate .7s cubic-bezier(.22,.9,.24,1)}
-/* ambient invitation: lamp bleed from the bottom edge, breathing. No indicator. */
-html.sequence #bleed{opacity:1;
-     background:radial-gradient(68% 44% at 50% 101%,
-       rgba(232,192,138,.20) 0%,rgba(232,192,138,.08) 42%,rgba(232,192,138,0) 76%);
-     filter:blur(26px);animation:breathe 5.4s ease-in-out infinite}
-@keyframes breathe{0%,100%{opacity:.62}50%{opacity:1}}
+/* roles and projects */
+.item header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 20px;align-items:baseline}
+.item h3{font-size:1.2rem;font-weight:700;letter-spacing:-.01em}
+.item h3 .org{font-weight:500;color:var(--muted)}
+.item .when{color:var(--muted);font-size:.92rem;white-space:nowrap;font-variant-numeric:lining-nums}
+.item .context{margin-top:4px;color:var(--muted);max-width:62ch}
+.item ul{margin-top:12px}
+.item li{position:relative;padding-left:18px;max-width:64ch}
+.item li+li{margin-top:8px}
+.item li::before{content:"";position:absolute;left:0;top:.72em;width:7px;height:1.5px;background:var(--accent)}
+.item .note{color:var(--muted);font-size:.95rem;margin-top:2px}
+.item p.desc{margin-top:8px;max-width:64ch}
+.item .repo{margin-top:6px;font-size:.92rem}
 
-/* BEAT 2 — the lamp comes up and the bench resolves out of the dark */
-html.sequence.stage-2 #glow{opacity:1}
-html.sequence.stage-2 #cone,html.sequence.stage-2 #pool{opacity:1}
-html.sequence.stage-2 #slab,html.sequence.stage-2 #apron{opacity:1}
-html.sequence.stage-2 #bleed{opacity:0;animation:none;transition:opacity 1.1s ease}
-html.sequence.stage-2 #cardlight{opacity:0}
-html.sequence.stage-2 #card{opacity:0;translate:-50% -66%;pointer-events:none}
-html.sequence.stage-2 #enter{visibility:hidden;transition:visibility 0s linear .85s}
+.facts p{max-width:64ch}
+.facts p+p{margin-top:10px}
+.facts b{font-weight:600}
 
-/* BEAT 3 — objects arrive: flanks first, hero last, so the eye finishes big.
-   DOM order is votal / senso / ratchet, so senso carries the longest delay. */
-html.sequence.stage-3 #intro{opacity:1}
-html.sequence.stage-3 .obj{opacity:1;translate:0 0}
-html.sequence.stage-3:not(.stage-4) .obj:nth-child(2){transition-delay:.34s}
-html.sequence.stage-3:not(.stage-4) .obj:nth-child(3){transition-delay:.17s}
-
-/* BEAT 4 — nav, then the hint last and quiet. Objects become interactive here,
-   after the stagger delays above have been dropped. */
-html.sequence.stage-4 #nav{visibility:visible;opacity:1;transition:opacity .9s ease}
-html.sequence.stage-4 #hint{opacity:1;transition:opacity 1s ease .45s}
-html.sequence.stage-4 .obj{pointer-events:auto}
-
-/* MOBILE — no scroll sequence on a phone: one short fade under the line */
-html.seq-mobile #shelf{opacity:0;translate:0 12px;animation:mfade .85s ease .35s forwards}
-html.seq-mobile #hint{opacity:0;animation:mfade .8s ease 1s forwards}
-@keyframes mfade{to{opacity:1;translate:0 0}}
+footer.contact{border-top:1px solid var(--line);padding-top:56px;padding-bottom:72px}
+footer.contact p.big{font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:700;letter-spacing:-.02em;
+  line-height:1.2;max-width:24ch;text-wrap:balance}
+footer.contact .actions{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center}
+footer.contact small{display:block;margin-top:48px;color:var(--muted);font-size:.85rem}
 </style>
-<script>
-/* Decide BEFORE first paint whether this visit gets the arrival sequence.
-   Adding a class is the only thing that opts in; the CSS default is assembled. */
-(function(){
-  var d=document.documentElement;
-  try{
-    if(location.hash) return;                                     // deep link
-    if(matchMedia("(prefers-reduced-motion:reduce)").matches) return;
-    if(matchMedia("(max-width:760px)").matches){d.className+=" seq-mobile";return;}
-    var seen=false;
-    try{ seen=sessionStorage.getItem("arrived")==="1"; }catch(e){} // throws in some privacy modes
-    if(seen) return;                                              // once per session
-    d.className+=" sequence";
-    /* Dead-man switch: if the sequence code never initialises (script error,
-       blocked, whatever), drop the opt-in so the visitor gets the assembled
-       hero rather than being stranded on beat 1. */
-    setTimeout(function(){ if(!window.__arrivalReady) d.classList.remove("sequence"); },2500);
-  }catch(e){}
-})();
-</script>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<nav id="nav">
-  <span class="mark" id="mark">Aayush Dixit</span>
-  <ul>
-    <li><a href="#bench-sec">on the bench</a></li>
-    <li><a href="#testing">under testing</a></li>
-    <li><a href="#logbook">the logbook</a></li>
-    <li><a href="#shipped">shipped</a></li>
-    <li><a href="#contact">build with me</a></li>
-  </ul>
-</nav>
+<div class="wrap">
+  <header class="top">
+    <a class="name" href="#">Aayush Dixit</a>
+    <nav aria-label="Sections">
+      <ul>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#built">Built</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
 
-
-<main>
-<div id="arrival">
-<section id="bench-sec" class="lit">
-  <div id="scene">
-    <div id="glow"></div>
-    <div id="bleed" aria-hidden="true"></div>
-    <div id="cardlight" aria-hidden="true"></div>
-    <div id="card">
-      <p class="card-name">Aayush Dixit</p>
-      <p class="card-claim">I build AI agents, then build the tests that decide whether they are good enough to ship.</p>
-      <button id="enter" type="button">
-        <span class="enter-label">turn on the light</span>
-        <span class="enter-line" aria-hidden="true"></span>
-      </button>
+  <main id="main">
+    <div class="hero">
+      <h1>Aayush Dixit, AI product builder, discovery to launch</h1>
+      <p class="claim">I own AI products from the first customer conversation through launch, and I write the evals that show what to improve next.</p>
+      <p class="sub">Product lead at two seed-stage AI startups, working daily with engineering and design. Based in the San Francisco Bay Area.</p>
+      <div class="actions">
+        <a class="btn" href="mailto:aayushdixit27@gmail.com">Email me</a>
+        <a href="https://linkedin.com/in/aayushdixit27">LinkedIn</a>
+        <a href="https://github.com/aayushdixit27">GitHub</a>
+      </div>
     </div>
-    <div id="cone" aria-hidden="true"></div>
-    <div id="slab"></div><div id="apron"></div><div id="pool"></div>
-    <div id="intro">
-      <h1 id="tagline">Nothing here was ordered assembled. Some of it is still in pieces.</h1>
-      <p id="sub">Product at Votal.ai. Evaluation advisor at Senso.ai.</p>
+
+    <section class="block" aria-labelledby="h-proof">
+      <h2 id="h-proof">In short</h2>
+      <ul class="proof">
+        <li><strong>Won a six-figure contract</strong> against two funded incumbents, and took it into production.</li>
+        <li><strong>Held ~92% blocking of adversarial threats</strong> across 12 languages, under a 200&nbsp;ms target.</li>
+        <li><strong>Four hackathon wins in 2026,</strong> building the agents hands-on.</li>
+      </ul>
+    </section>
+
+    <section class="block" id="experience" aria-labelledby="h-exp">
+      <h2 id="h-exp">Experience</h2>
+      <div class="stack">
+        <article class="item">
+          <header>
+            <h3>Product Lead <span class="org">at Votal.ai</span></h3>
+            <span class="when">Jul 2025 to present</span>
+          </header>
+          <p class="context">AI security for enterprise agents: red teaming that finds attacks, runtime guardrails that stop them.</p>
+          <ul>
+            <li>Owned the product with engineering from discovery to post-launch: what got built, what got cut, and whether it worked after it shipped.</li>
+            <li>Won a six-figure contract against two funded incumbents after a multi-week POC, then took it to production on the customer's NVIDIA stack (Nemotron, NIM, vLLM).</li>
+            <li>Chose the production model after benchmarking models from 0.8B to 27B parameters; held ~92% adversarial-threat blocking across 12 languages under a 200&nbsp;ms target.</li>
+            <li>Red-teamed our own guardrails and found a cross-tenant flaw before any customer did.</li>
+            <li>Took Votal.ai from product spec to AWS Marketplace seller approval in under a month.</li>
+          </ul>
+        </article>
+
+        <article class="item">
+          <header>
+            <h3>Product Consultant <span class="org">at Senso</span></h3>
+            <span class="when">Jul to Sep 2026</span>
+          </header>
+          <p class="context">AI knowledge base, acquired by Zeta in October 2026.</p>
+          <ul>
+            <li>Brought in by the CEO after my hackathon win to fix developer onboarding for Senso's AI knowledge base.</li>
+            <li>Cut integration to one step (paste one prompt into Claude or ChatGPT) and rebuilt docs.senso.ai with its AI engineers.</li>
+            <li>Tested the platform against its own docs as an outside developer: 7 defects I logged were fixed, and 2 changed the product.</li>
+          </ul>
+        </article>
+
+        <article class="item">
+          <header>
+            <h3>Founding Product Lead <span class="org">at BlendUp.ai</span></h3>
+            <span class="when">Jan 2024 to Jul 2025</span>
+          </header>
+          <ul>
+            <li>Joined as UX designer and stepped up to lead product 0→1, from wireframes to a working app shipped in Scrum.</li>
+            <li>Landed 3 enterprise design partners by pitching tech leaders and buyers, then ran discovery with them continuously and built or cut features on the results; pilots showed ~20% higher team productivity.</li>
+            <li>Built the product design process and UI playbook the team shipped against.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" id="built" aria-labelledby="h-built">
+      <h2 id="h-built">Built</h2>
+      <div class="stack">
+        <article class="item">
+          <h3>Coding-agent integrity evals</h3>
+          <p class="note">Public build log, 2026</p>
+          <p class="desc">Defined a measure of when coding agents claim checks they never ran, and committed the rubric publicly before scoring 21 transcripts. Caught a flaw in my own grader that changed 3 of my 4 findings.</p>
+          <p class="repo"><a href="https://github.com/aayushdixit27/coding-agent-evals">Read the build log on GitHub</a></p>
+        </article>
+
+        <article class="item">
+          <h3>Ratchet</h3>
+          <p class="note">Winner, Best Use of Senso, Self-Evolving Agents Hackathon</p>
+          <p class="desc">Solo-built a QA agent that saves a fix to memory only after an independent re-test proves it; recurring bugs dropped from four AI calls to one. Led to the Senso engagement.</p>
+          <p class="repo"><a href="https://github.com/aayushdixit27/ratchet">Code on GitHub</a></p>
+        </article>
+
+        <article class="item">
+          <h3>ElderSteady Private</h3>
+          <p class="note">2nd place, SiMa.ai track, AI Infra Summit Hackathon</p>
+          <p class="desc">On-device fall alert that turns each frame into 17 body points, deletes the frame, and texts family only on a fall. In one session 3.4 MB of video came in and 11 KB went out, checkable with one command.</p>
+          <p class="repo"><a href="https://github.com/aayushdixit27/eldersteady-private">Code on GitHub</a></p>
+        </article>
+
+        <article class="item">
+          <h3>PAR</h3>
+          <p class="note">Winner, Senso track, Agentic Commerce Hackathon</p>
+          <p class="desc">Purchasing agent spending on Visa rails under one passkey-signed rule; it refused a purchase every rule allowed because the operator's invoices contradicted it.</p>
+          <p class="repo"><a href="https://github.com/aayushdixit27/par-purchasing-agent">Code on GitHub</a></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="h-edu">
+      <h2 id="h-edu">Education and skills</h2>
+      <div class="facts">
+        <p><b>B.A., UC Santa Barbara</b>, 2023</p>
+        <p><b>Product Management Accelerated Program</b>, Stanford Online, 2024</p>
+        <p><b>Build:</b> Python, TypeScript, SQL; Claude Code and Codex; MCP (5 servers built in TypeScript)</p>
+        <p><b>AI stack:</b> evals, red teaming, guardrails; vLLM, SGLang, NIM, Nemotron; on-device inference (Jetson, SiMa Modalix)</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="contact" id="contact">
+    <p class="big">Building an AI product and need someone to own it from discovery to launch?</p>
+    <div class="actions">
+      <a class="btn" href="mailto:aayushdixit27@gmail.com">aayushdixit27@gmail.com</a>
+      <a href="https://linkedin.com/in/aayushdixit27">LinkedIn</a>
+      <a href="https://github.com/aayushdixit27">GitHub</a>
     </div>
-    <div id="shelf"></div>
-    <p id="hint">(turn one over)</p>
-  </div>
-</section>
+    <small>© 2026 Aayush Dixit</small>
+  </footer>
 </div>
-
-<section class="band light" id="testing">
-  <p class="kicker">UNDER TESTING</p>
-  <h2>Three things I built, and the number each one still gets wrong</h2>
-
-  <div class="case">
-    <h3>A gate that blocks 92% is a gate that passes 8%</h3>
-    <p class="lede">Votal.ai. The evaluation suite that gates every release — roadmapped, scoped with engineering, running now.</p>
-    <div class="verdicts">
-      <div class="verdict"><span class="n">12</span><span class="l">LANGUAGES</span></div>
-      <div class="verdict"><span class="n">~92%</span><span class="l">BLOCKED</span></div>
-      <div class="verdict"><span class="n">Every</span><span class="l">RELEASE</span></div>
-    </div>
-    <p>I scoped it with engineering as a gate rather than a dashboard. That distinction is the whole design: a dashboard is read when there is time, a gate sits on the release path and a release does not go out without it. Across twelve languages it blocks roughly 92% of attacks.</p>
-    <p><strong>The number everyone quotes is the reassuring one.</strong> Ninety-two percent blocked is eight percent passed, and twelve languages is not every language a customer will type in. Both are still true today.</p>
-    <p class="case-ask"><a href="#contact">Building a gate like this one?</a></p>
-  </div>
-
-  <div class="case">
-    <h3>Testing a platform against what its own documentation promises</h3>
-    <p class="lede">Advisory work at Senso.ai. Outside developer, no access, no briefing — just the docs and a hostile reading of them.</p>
-    <div class="verdicts">
-      <div class="verdict"><span class="n">73</span><span class="l">DEFECTS LOGGED</span></div>
-      <div class="verdict"><span class="n">7 / 2</span><span class="l">CLOSED / CHANGED THE PRODUCT</span></div>
-      <div class="verdict red"><span class="n">11,217</span><span class="l">WORDS UNREACHABLE</span></div>
-    </div>
-    <p>I froze twelve developer questions with pass conditions written before any run, then executed them in two lanes with different handicaps. Setting the bar first is the method: once you have seen the output, you will negotiate with yourself about what counts as passing.</p>
-    <p>The finding that mattered was not a defect. The company had published 11,217 words of product definition in a place nothing reading the documentation could reach. <strong>The product was well explained and the explanation was unreachable.</strong></p>
-    <p>Seventy-three defects filed. Seven closed, two changed the product. The rest are a standing argument about what the docs are for.</p>
-    <p class="case-ask"><a href="#contact">Docs that promise more than they reach?</a></p>
-  </div>
-
-  <div class="case">
-    <h3>The day my own fix started lying to me</h3>
-    <p class="lede">Independent · Jetson AGX Orin. My own hardware, my own suite. Two evaluations of one transcript disagreed completely, and the reassuring one was wrong.</p>
-    <div class="verdicts">
-      <div class="verdict"><span class="n">0%</span><span class="l">KEYWORD DETECTOR</span></div>
-      <div class="verdict red"><span class="n">100%</span><span class="l">LLM JUDGE</span></div>
-    </div>
-    <p>An adversarial suite against a guarded model returned a 0% attack success rate. An LLM judge, reading <strong>the same transcript</strong>, scored it 100%.</p>
-    <p>The cause was upstream of what I was looking at. PII masking ran before detection, so the keyword detector was reading a transcript with the attacker's signal already redacted out of it. The detector was not broken. The safety feature was eating the evidence.</p>
-    <p>Detection moved ahead of masking and every prior run was re-baselined. <strong>Which of the earlier clean results were actually clean is unrecoverable</strong>; the count starts from the fix.</p>
-    <p>A metric that agrees with you is not evidence. Every eval I have built since carries a second, differently-shaped reader whose only job is to disagree.</p>
-    <p class="case-ask"><a href="#contact">Have a number you don't trust?</a></p>
-  </div>
-</section>
-
-<section class="band light" id="logbook">
-  <p class="kicker">THE LOGBOOK</p>
-  <h2>Writing and side output</h2>
-  <p class="lede">Most of what I understand, I understood by writing it down for someone else.</p>
-  <ul class="entries">
-    <li><span class="when">2025–2026</span><span class="what">Nine typeset field guides</span>
-      <span class="note">Curated book trilogies distilled into structured documents, each built around a set of engineering principles.</span></li>
-    <li><span class="when">Ongoing</span><span class="what">Tales of the Turning Wheel</span>
-      <span class="note">A serialized narrative campaign that teaches leadership decisions through branching choices rather than frameworks.</span></li>
-  </ul>
-</section>
-
-<section class="band light" id="shipped">
-  <p class="kicker">SHIPPED</p>
-  <h2>Where the hours went</h2>
-  <ul class="entries">
-    <li><span class="when">Jul 2025 – present</span><span class="what">Product Lead, Votal.ai</span>
-      <span class="note">Seed-stage platform for enterprise AI agents: tool use, retrieval, evaluation, guardrails. Owned the platform end to end — what got built, what got cut, whether it worked after it shipped. Owned task resolution rate. Roadmapped the evaluation suite that gates every release; across 12 languages it blocks roughly 92% of attacks. SOC2 work on data residency, retention and audit logging that enterprise deals closed on.</span></li>
-    <li><span class="when">Jul 2026 – present</span><span class="what">Evaluation Advisor, Senso.ai</span>
-      <span class="note">Independent, unpaid. Testing the platform against what its documentation promises.</span></li>
-    <li><span class="when">Jan 2024 – Jul 2025</span><span class="what">Product Manager, BlendUp.ai</span>
-      <span class="note">Took a B2B collaboration product from an ambiguous idea to a working one: first three enterprise design partners, roughly 20% productivity gain. Ran continuous discovery with those partners and built and cut features on the results. Built the UI playbook and the product design process.</span></li>
-    <li><span class="when">2026 · Hackathon</span><span class="what">Ratchet — Winner, Best Use of Senso</span>
-      <span class="note">Solo-built a QA agent that commits a fix to memory only once an independent re-test proves it worked, against a field of 130+ developers. Recurring bugs fell from four AI calls to one. The sponsor's CEO commissioned a follow-up product.</span></li>
-    <li><span class="when">2026 · Hackathon</span><span class="what">PAR — Winner, Best Use of Senso</span>
-      <span class="note">An autonomous purchasing agent that does the weekly restock for a small operator — a gym front desk, a cafe.</span></li>
-    <li><span class="when">2026 · Hackathon</span><span class="what">911Stock — Winner, Most Creative Use of TrueFoundry</span>
-      <span class="note">Led product on a two-person team building an autonomous agent with human-in-the-loop review. Deep Agents Hackathon, RSAC.</span></li>
-    <li><span class="when">2024</span><span class="what">Product Management Accelerated Credential, Stanford Online</span><span class="note"></span></li>
-    <li><span class="when">2023</span><span class="what">B.A., University of California, Santa Barbara</span><span class="note"></span></li>
-  </ul>
-</section>
-
-<section class="band" id="contact">
-  <p class="kicker">BUILD WITH ME</p>
-  <h2>Tell me what you're building.</h2>
-  <p class="lede">Especially the part you can't measure yet.</p>
-  <p><a class="big" href="mailto:aayushdixit27@gmail.com" id="mailto">aayushdixit27@gmail.com</a></p>
-  <p style="margin-top:2em"><a href="https://linkedin.com/in/aayushdixit27" id="li">LinkedIn</a> &nbsp;·&nbsp; <a href="https://github.com/aayushdixit27" id="gh">GitHub</a></p>
-</section>
-</main>
-
-<footer><span id="foot">AAYUSH DIXIT · BUILT AND REBUILT</span></footer>
-
-<div id="tray"><button id="closeBtn">CLOSE · ESC</button><a id="moreBtn" href="#testing">OPEN THE FULL ENTRY</a></div>
-
-<script>
-/* ============================================================
-   CONFIG
-============================================================ */
-const CONFIG = {
-  name:  "Aayush Dixit",
-  email: "aayushdixit27@gmail.com",
-  linkedin: "https://linkedin.com/in/aayushdixit27",
-  github:   "https://github.com/aayushdixit27"
-};
-
-/* ============================================================
-   BENCH CONTENT — one object per thing on the bench.
-   Swap `face` for <img src="obj-<id>-face.png"> when cutouts land.
-============================================================ */
-const OX="#5F2214", BONE="#D8CCBB", DIM="#5C544B";  /* plate oxide: 3.63:1 on the mid gradient stop */
-const OBJECTS=[
- /* LEFT — the release gate */
- {id:"votal",x:22,depth:.62,w:19,href:"#shipped",
-  model:"Multilingual release gate",serial:"VOT·EVAL·0001",
-  service:"Jul 2025 – present · Votal.ai · enterprise agent platform",
-  rated:["Evaluation suite that gates every release. Across twelve",
-         "languages it blocks roughly 92% of attacks."],
-  fault:"A gate that blocks 92% is a gate that passes 8%.",
-  faultSub:"The number everyone quotes is the reassuring one.",
-  cause:["Evaluation that runs beside the release train gets read when",
-         "there is time and skipped when there is not."],
-  causeSub:"Advisory results lose to shipping pressure.",
-  action:["Scoped it with engineering as a gate, not a dashboard.",
-          "Across 12 languages it blocks roughly 92% of attacks."],
-  open:"Roughly 8% still gets through. Twelve languages is not every language.",
-  face:`<svg viewBox="0 0 300 146">
-    <rect x="18" y="24" width="264" height="112" rx="5" fill="#221B14" stroke="#3E3227" stroke-width="2"/>
-    <rect x="18" y="24" width="264" height="11" rx="5" fill="#2E251B"/>
-    <rect x="36" y="46" width="126" height="54" rx="2" fill="#0B0908" stroke="#171210" stroke-width="2"/>
-    <text x="99" y="85" text-anchor="middle" font-size="31" font-weight="600" fill="${BONE}" font-family="IBM Plex Mono,monospace">92%</text>
-    <rect x="182" y="44" width="9" height="58" rx="2" fill="#4E4238"/>
-    <rect x="266" y="70" width="7" height="32" rx="2" fill="#3E3227"/>
-    <rect x="186" y="62" width="86" height="9" rx="2.5" fill="#6E6154"/>
-    ${[204,228,252].map(x=>`<rect x="${x}" y="62" width="11" height="9" fill="#332A20"/>`).join("")}
-    <circle cx="186.5" cy="66.5" r="5.5" fill="#8A7C6C"/><circle cx="186.5" cy="66.5" r="2" fill="#241D16"/>
-    ${Array.from({length:12},(_,i)=>i===11
-      ?`<circle cx="${38+i*20.5}" cy="118" r="5.6" fill="none" stroke="${OX}" stroke-width="1.2" opacity=".55"/><circle cx="${38+i*20.5}" cy="118" r="4.6" fill="${OX}"/>`
-      :`<circle cx="${38+i*20.5}" cy="118" r="4.6" fill="#7D7062"/>`).join("")}
-    <rect x="26" y="136" width="248" height="9" rx="2" fill="#17120D"/></svg>`},
-
- /* CENTRE — the hero */
- {id:"senso",x:50,depth:.18,w:24,href:"#testing",
-  model:"Documentation conformance rig",serial:"SEN·DOC·0003",
-  service:"Jul 2026 – present · Senso.ai · advisory",
-  rated:"Platform behaves the way its documentation says it does.",
-  fault:"11,217 words of product definition, unreachable.",
-  faultSub:"Well explained, and nothing reading the docs could get to it.",
-  cause:["The definition sat in a surface the documentation never",
-         "pointed to. Anything reading the docs stopped short of it."],
-  causeSub:"Written is not the same as reachable.",
-  action:["Filed 73 defects as an outside developer. Seven closed,",
-          "two changed the product."],
-  open:"The rest are a standing argument about what the docs are for.",
-  face:`<svg viewBox="0 0 300 170">
-    <rect x="52" y="34" width="176" height="126" rx="3" fill="#1A1510" stroke="#2E251C" stroke-width="2" transform="rotate(-6 140 97)"/>
-    <rect x="62" y="28" width="176" height="126" rx="3" fill="#221B14" stroke="#3A2E24" stroke-width="2" transform="rotate(-2 150 91)"/>
-    <rect x="70" y="24" width="176" height="126" rx="3" fill="#2C241B" stroke="#4A3C2E" stroke-width="2"/>
-    <text x="88" y="58" font-size="27" font-weight="500" fill="${BONE}" font-family="IBM Plex Mono,monospace">11,217</text>
-    <g stroke="#5A4C3C" stroke-width="3" stroke-linecap="round">
-      <path d="M88,74 H228"/><path d="M88,106 H198"/><path d="M88,122 H222"/><path d="M88,138 H176"/></g>
-    <path d="M88,90 H214" stroke="#4A3C2E" stroke-width="3" stroke-linecap="round"/>
-    <path d="M82,90 H220" stroke="${OX}" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="238" cy="90" r="5" fill="${OX}"/></svg>`},
-
- /* RIGHT — the hackathon build */
- {id:"ratchet",x:76,depth:.70,w:18,href:"#shipped",
-  model:"Self-verifying QA agent",serial:"RTC·SEA·0002",
-  service:"2026 · Self-Evolving Agents Hackathon, SF",
-  rated:"Fixes bugs and remembers the fix.",
-  fault:"An agent will remember a fix it never confirmed.",
-  faultSub:"Memory without verification is just confident repetition.",
-  cause:["Writing to memory on completion rather than on proof",
-         "lets one bad fix propagate through every later run."],
-  causeSub:"The agent believed itself.",
-  action:["Commit to memory only after an independent re-test passes.",
-          "Recurring bugs fell from four AI calls to one."],
-  open:"The re-test shares assumptions with the fix. Not fully independent yet.",
-  face:`<svg viewBox="0 0 300 156">
-    <rect x="40" y="46" width="220" height="72" rx="4" fill="#171310"/>
-    <rect x="40" y="46" width="220" height="12" fill="#241D16"/>
-    <g stroke="#4E4238" stroke-width="3">${Array.from({length:12},(_,i)=>`<path d="M${58+i*16},58 V112"/>`).join("")}</g>
-    <circle cx="250" cy="106" r="3.5" fill="${OX}"/>
-    <path d="M262,96 C316,100 320,140 274,150 C232,158 214,136 256,130" stroke="#141110" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`}
-];
-
-/* ---------- plate generator (the back face) ---------- */
-function plate(o){
-  const F='font-family="IBM Plex Sans,sans-serif"';
-  const lbl=(y,t)=>`<text x="120" y="${y}" font-size="15" letter-spacing="3.2" fill="#6E665D" ${F}>${t}</text>`;
-  const rule=y=>`<path d="M120,${y} H1160" stroke="#9E958A" stroke-width="1" opacity=".7"/>`;
-  const v=(y,t,sz,f,w)=>`<text x="380" y="${y}" font-size="${sz}" fill="${f}" ${w?`font-weight="${w}"`:""} ${F}>${t||""}</text>`;
-  return `<svg viewBox="0 0 1280 840">
-   <defs><linearGradient id="al-${o.id}" x1="0" y1="0" x2=".35" y2="1">
-     <stop offset="0%" stop-color="#A9A096"/><stop offset="38%" stop-color="#948B80"/>
-     <stop offset="62%" stop-color="#9E958A"/><stop offset="100%" stop-color="#837A70"/></linearGradient>
-    <linearGradient id="rv-${o.id}" x1="0" y1="0" x2=".4" y2="1">
-     <stop offset="0%" stop-color="#C4BCB1"/><stop offset="100%" stop-color="#615A52"/></linearGradient></defs>
-   <rect x="30" y="30" width="1220" height="780" rx="10" fill="url(#al-${o.id})"/>
-   <g opacity=".13" stroke="#E4DDD4">${Array.from({length:14},(_,i)=>`<path d="M30,${70+i*54} H1250"/>`).join("")}</g>
-   <rect x="30" y="30" width="1220" height="780" rx="10" fill="none" stroke="#5E574F" stroke-width="2"/>
-   <rect x="44" y="44" width="1192" height="752" rx="5" fill="none" stroke="#B6AEA3" stroke-width="1" opacity=".5"/>
-   ${[[78,78],[1202,78],[78,762],[1202,762]].map(([cx,cy])=>`<circle cx="${cx}" cy="${cy}" r="13" fill="url(#rv-${o.id})"/>`).join("")}
-   ${lbl(150,"MODEL")}
-   <text x="119" y="196" font-size="40" font-weight="600" fill="#F2EDE6" opacity=".35" ${F}>${o.model}</text>
-   <text x="120" y="195" font-size="40" font-weight="600" fill="#2B2620" ${F}>${o.model}</text>
-   <text x="1160" y="150" text-anchor="end" font-size="15" letter-spacing="3.2" fill="#6E665D" ${F}>SERIAL</text>
-   <text x="1160" y="192" text-anchor="end" font-size="25" fill="#2B2620" font-family="IBM Plex Mono,monospace">${o.serial}</text>
-   <path d="M120,228 H1160" stroke="#5E574F" stroke-width="1.5"/>
-   ${lbl(286,"IN SERVICE")}${v(286,o.service,23,"#2B2620")}
-   ${(rl=>rl.length>1
-       ? lbl(344,"RATED FOR")+v(344,rl[0],23,"#2B2620")+v(374,rl[1],23,"#2B2620")
-       : lbl(352,"RATED FOR")+v(352,rl[0],23,"#2B2620")
-     )(Array.isArray(o.rated)?o.rated:[o.rated])}
-   ${rule(392)}${lbl(426,"FAULT FOUND")}${v(426,o.fault,26,OX,600)}${v(462,o.faultSub,21,DIM)}
-   ${rule(498)}${lbl(532,"CAUSE")}${v(532,o.cause[0],23,"#2B2620")}${v(563,o.cause[1],23,"#2B2620")}${v(594,o.causeSub,21,DIM)}
-   ${rule(622)}${lbl(656,"ACTION")}${v(656,o.action[0],23,"#2B2620")}${v(687,o.action[1],23,"#2B2620")}
-   ${rule(716)}${lbl(752,"STILL OPEN")}${v(752,o.open,21,DIM)}
-  </svg>`;
-}
-
-/* ---------- build ---------- */
-/* The name, footer, email and both profile links are real values in the markup above.
-   JS only overrides them if CONFIG has been edited to something different — it never
-   supplies a missing one, so the served HTML is complete with scripting off. */
-const setIf=(el,prop,val)=>{if(el&&val&&el[prop]!==val)el[prop]=val;};
-setIf(document.getElementById("mark"),"textContent",CONFIG.name);
-setIf(document.getElementById("foot"),"textContent",CONFIG.name.toUpperCase()+" · BUILT AND REBUILT");
-const ml=document.getElementById("mailto");
-setIf(ml,"href","mailto:"+CONFIG.email); setIf(ml,"textContent",CONFIG.email);
-setIf(document.getElementById("li"),"href",CONFIG.linkedin);
-setIf(document.getElementById("gh"),"href",CONFIG.github);
-
-document.getElementById("shelf").innerHTML = OBJECTS.map(o=>`
-  <button class="obj" id="o-${o.id}" data-href="${o.href}"
-          style="--x:${o.x};--w:${o.w};--depth:${o.depth}"
-          aria-label="${o.model}. Turn over to read its equipment plate.">
-    <span class="tag" aria-hidden="true">
-      <span class="tag-name">${o.model}</span>
-      <span class="tag-act"><span class="dot"></span>turn over for the fault report</span>
-    </span>
-    <span class="face">${o.face}</span>
-    <span class="back">${plate(o)}</span>
-  </button>`).join("");
-
-const scene=document.getElementById("scene"), tray=document.getElementById("tray"),
-      moreBtn=document.getElementById("moreBtn"), objs=[...document.querySelectorAll(".obj")];
-let openEl=null;
-const narrow=()=>matchMedia("(max-width:760px)").matches;
-
-/* which side of each object the lamp falls on — read from --lamp-x, never duplicated */
-const LAMP_X=parseFloat(getComputedStyle(scene).getPropertyValue("--lamp-x"));
-objs.forEach((el,i)=>el.classList.toggle("lamp-left",OBJECTS[i].x>LAMP_X));
-
-function openObj(el){
-  if(openEl) closeObj();
-  if(!narrow()){
-    const s=scene.getBoundingClientRect(), e=el.getBoundingClientRect();
-    const PLATE_AR=1280/840;
-    /* widest the plate can be before it outgrows the scene vertically */
-    const targetW=Math.min(s.width*.74, 1000, s.height*.90*PLATE_AR);
-    const k=targetW/e.width;
-    el.style.setProperty("--dx",(s.left+s.width/2-(e.left+e.width/2))+"px");
-    el.style.setProperty("--dy",(s.top+s.height*.46-(e.top+e.height/2))+"px");
-    el.style.setProperty("--s",k);
-    objs.forEach(o=>{if(o!==el)o.classList.add("dimmed")});
-  }
-  el.classList.add("open"); openEl=el;
-  moreBtn.href=el.dataset.href; tray.classList.add("on");
-}
-function closeObj(){
-  if(!openEl) return;
-  openEl.classList.remove("open");
-  objs.forEach(o=>o.classList.remove("dimmed"));
-  openEl=null; tray.classList.remove("on");
-}
-objs.forEach(el=>el.addEventListener("click",()=>el===openEl?closeObj():openObj(el)));
-document.getElementById("closeBtn").addEventListener("click",closeObj);
-addEventListener("keydown",e=>{if(e.key==="Escape")closeObj()});
-addEventListener("resize",closeObj);
-moreBtn.addEventListener("click",closeObj);
-
-/* Chrome drops this page's initial fragment scroll — verified pre-existing, it
-   happens with the arrival sequence removed too. Re-apply it once after layout
-   so deep links actually land on their section. */
-if(location.hash){
-  const target=document.getElementById(location.hash.slice(1));
-  if(target) requestAnimationFrame(()=>requestAnimationFrame(
-    ()=>target.scrollIntoView({behavior:"instant",block:"start"})));
-}
-
-/* ---------- arrival sequence ---------- */
-const root=document.documentElement, arrival=document.getElementById("arrival");
-const markSeen=()=>{try{sessionStorage.setItem("arrived","1");}catch(e){}};
-
-/* the mobile fade is pure CSS and self-completing; JS only records the visit */
-if(root.classList.contains("seq-mobile")) markSeen();
-
-if(root.classList.contains("sequence")){
-  window.__arrivalReady=1;   // cancels the dead-man switch in <head>
-  let locked=false, ticking=false;
-  function read(){
-    ticking=false;
-    if(locked) return;
-    const span=arrival.offsetHeight-innerHeight;
-    const p=span>0 ? Math.min(1,Math.max(0,-arrival.getBoundingClientRect().top/span)) : 1;
-    root.classList.toggle("stage-2",p>=.22);   // lamp up, bench resolves
-    root.classList.toggle("stage-3",p>=.46);   // objects arrive
-    root.classList.toggle("stage-4",p>=.76);   // nav, then the hint
-    if(p>=.9) markSeen();
-  }
-  const onScroll=()=>{ if(!ticking){ ticking=true; requestAnimationFrame(read); } };
-  addEventListener("scroll",onScroll,{passive:true});
-  addEventListener("resize",onScroll,{passive:true});
-  read();
-
-  /* Own the tween rather than calling scrollTo({behavior:"smooth"}): the native
-     one is a no-op in some browsers, and where it does work it covers this
-     distance far too fast to watch the room come up. Any real input from the
-     user cancels it immediately — the control assists, it never takes over. */
-  const enter=document.getElementById("enter");
-  if(enter) enter.addEventListener("click",function(){
-    const span=arrival.offsetHeight-innerHeight;
-    const from=scrollY, to=Math.round(span*.82), t0=performance.now(), dur=1800;
-    let cancelled=false;
-    const stop=()=>{cancelled=true;release();};
-    const release=()=>{
-      removeEventListener("wheel",stop); removeEventListener("touchstart",stop);
-      removeEventListener("keydown",stop);
-    };
-    addEventListener("wheel",stop,{passive:true});
-    addEventListener("touchstart",stop,{passive:true});
-    addEventListener("keydown",stop);
-    (function step(now){
-      if(cancelled) return;
-      const k=Math.min(1,(now-t0)/dur);
-      const e=k<.5 ? 4*k*k*k : 1-Math.pow(-2*k+2,3)/2;   // easeInOutCubic
-      scrollTo(0,from+(to-from)*e);
-      if(k<1) requestAnimationFrame(step); else release();
-    })(t0);
-    /* The control promises to turn the light on, so it has to answer even if the
-       tween cannot run (rAF is throttled in a backgrounded tab). If nothing has
-       moved shortly after the click, jump and light the room outright. */
-    setTimeout(function(){
-      if(cancelled || Math.abs(scrollY-from)>4) return;
-      release();
-      scrollTo(0,to);
-      root.classList.add("stage-2","stage-3","stage-4");
-      markSeen();
-    },420);
-  });
-
-  /* Tab is a request to navigate. A keyboard user must never be left waiting on
-     a scroll animation, so finish the assembly at once and stop letting scroll
-     position drive it back down. */
-  addEventListener("keydown",function(e){
-    if(e.key!=="Tab"||locked) return;
-    locked=true;
-    root.classList.add("stage-2","stage-3","stage-4");
-    markSeen();
-  },{capture:true});
-}
-</script>
 </body>
 </html>
